@@ -1,0 +1,136 @@
+import React from "react";
+import {
+  Box,
+  Container,
+  Typography,
+  Grid,
+  Card,
+  CardMedia,
+  CardContent,
+  Button,
+  Avatar,
+  TextField,
+  IconButton,
+  Stack,
+} from "@mui/material";
+import MailOutlineIcon from "@mui/icons-material/MailOutline";
+
+const featured = [
+  { id: 1, src: "/images/art1.jpg", title: "Untitled #1" },
+  { id: 2, src: "/images/art2.jpg", title: "Landscape Study" },
+  { id: 3, src: "/images/art3.jpg", title: "Portrait Study" },
+  { id: 4, src: "/images/art4.jpg", title: "Abstract Form" },
+];
+
+export default function IntroPage() {
+  return (
+    <Box sx={{ bgcolor: "#fafafa", minHeight: "100vh" }}>
+      {/* Hero */}
+      <Box
+        sx={{
+          backgroundImage: `url('/images/hero.jpg')`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          color: "white",
+          py: { xs: 8, md: 14 },
+        }}
+      >
+        <Container maxWidth="lg">
+          <Box sx={{ maxWidth: 800, backdropFilter: "blur(2px)" }}>
+            <Typography variant="h3" component="h1" gutterBottom>
+              Your Name — Visual Artist
+            </Typography>
+            <Typography variant="h6" sx={{ mb: 3, opacity: 0.95 }}>
+              Creating contemporary paintings and digital prints exploring color,
+              texture, and form. Available for commissions and prints.
+            </Typography>
+            <Stack direction="row" spacing={2}>
+              <Button variant="contained" color="primary" href="/gallery">
+                View Gallery
+              </Button>
+              <Button variant="outlined" color="inherit" href="/about">
+                About
+              </Button>
+            </Stack>
+          </Box>
+        </Container>
+      </Box>
+
+      {/* Featured */}
+      <Container maxWidth="lg" sx={{ py: 6 }}>
+        <Typography variant="h5" gutterBottom>
+          Featured Works
+        </Typography>
+        <Grid container spacing={2}>
+          {featured.map((item) => (
+            <Grid item xs={12} sm={6} md={3} key={item.id}>
+              <Card elevation={3}>
+                <CardMedia
+                  component="img"
+                  height="200"
+                  image={item.src}
+                  alt={item.title}
+                />
+                <CardContent>
+                  <Typography variant="subtitle1">{item.title}</Typography>
+                </CardContent>
+              </Card>
+            </Grid>
+          ))}
+        </Grid>
+      </Container>
+
+      {/* About / CTA */}
+      <Container maxWidth="lg" sx={{ py: 4 }}>
+        <Grid container spacing={4} alignItems="center">
+          <Grid item xs={12} md={4}>
+            <Avatar
+              src="/images/avatar.jpg"
+              alt="Artist"
+              sx={{ width: 120, height: 120 }}
+            />
+          </Grid>
+          <Grid item xs={12} md={8}>
+            <Typography variant="h6">About the Artist</Typography>
+            <Typography sx={{ mb: 2 }}>
+              Short bio: what you create, your influences, exhibitions, or
+              commission availability. Keep this 2–3 short sentences.
+            </Typography>
+
+            <Stack
+              direction={{ xs: "column", sm: "row" }}
+              spacing={2}
+              alignItems="center"
+            >
+              <TextField
+                placeholder="Your email"
+                size="small"
+                sx={{ width: 240 }}
+              />
+              <Button
+                variant="contained"
+                startIcon={<MailOutlineIcon />}
+                onClick={() => alert("Subscribe - hook this up to your backend")}
+              >
+                Subscribe
+              </Button>
+            </Stack>
+          </Grid>
+        </Grid>
+      </Container>
+
+      {/* Footer */}
+      <Box sx={{ bgcolor: "#222", color: "#ddd", py: 3 }}>
+        <Container maxWidth="lg" sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <Typography variant="body2">© {new Date().getFullYear()} Your Name</Typography>
+          <Stack direction="row" spacing={1}>
+            <IconButton color="inherit" href="mailto:you@example.com" size="small">
+              <MailOutlineIcon sx={{ color: "#ddd" }} />
+            </IconButton>
+            <Button href="/contact" variant="text" sx={{ color: "#ddd" }}>Contact</Button>
+          </Stack>
+        </Container>
+      </Box>
+    </Box>
+  );
+}

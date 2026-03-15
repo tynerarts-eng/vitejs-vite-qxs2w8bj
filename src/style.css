@@ -2,23 +2,23 @@
   font-family: Georgia, 'Times New Roman', serif;
   line-height: 1.5;
   font-weight: 400;
-  color: #241919;
+  color: #ffffff;
   background:
-    radial-gradient(circle at top, rgba(201, 115, 73, 0.2), transparent 35%),
-    linear-gradient(180deg, #f4ede4 0%, #efe3d2 48%, #e6d5c0 100%);
+    radial-gradient(circle at top, rgba(255,255,255,0.05), transparent 35%),
+    linear-gradient(180deg, #2e3137 0%, #22262c 48%, #181c22 100%);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   --page-width: 1160px;
-  --surface: rgba(255, 249, 241, 0.78);
-  --surface-strong: rgba(255, 250, 244, 0.94);
-  --border: rgba(77, 43, 33, 0.14);
-  --heading: #1e1410;
-  --muted: #604941;
-  --accent: #934d33;
-  --accent-strong: #6f331f;
-  --shadow: 0 24px 80px rgba(72, 43, 28, 0.12);
+  --surface: rgba(36, 40, 47, 0.82);
+  --surface-strong: rgba(48, 54, 63, 0.95);
+  --border: rgba(172, 184, 165, 0.2);
+  --heading: #ffffff;
+  --muted: #e8e6df;
+  --accent: #9ca390;
+  --accent-strong: #c5b999;
+  --shadow: 0 24px 80px rgba(0, 0, 0, 0.3);
 }
 
 * {
@@ -58,7 +58,7 @@ a.button {
   border: 1px solid var(--border);
   border-radius: 28px;
   overflow: hidden;
-  background: linear-gradient(180deg, rgba(255, 251, 246, 0.8), rgba(246, 237, 225, 0.92));
+  background: linear-gradient(180deg, rgba(30, 34, 42, 0.9), rgba(21, 24, 31, 0.95));
   box-shadow: var(--shadow);
 }
 

@@ -1,0 +1,113 @@
+{
+  "siteTitle": "Bruce Tyner Fine Art",
+  "nav": [
+    {
+      "key": "home",
+      "label": "Home",
+      "href": "/"
+    },
+    {
+      "key": "about",
+      "label": "About",
+      "href": "/about.html"
+    },
+    {
+      "key": "portfolio",
+      "label": "Portfolio",
+      "href": "/portfolio.html"
+    },
+    {
+      "key": "blog",
+      "label": "Blog",
+      "href": "/blog.html"
+    },
+    {
+      "key": "events",
+      "label": "Events",
+      "href": "/events.html"
+    },
+    {
+      "key": "contact",
+      "label": "Contact",
+      "href": "/contact.html"
+    }
+  ],
+  "home": {
+    "eyebrow": "Art, ideas, and local presence",
+    "title": "A personal site for artwork, writing, and whatever interesting thing comes next.",
+    "lede": "This is designed to feel welcoming rather than salesy. It can introduce your dad, show selected work, share thoughts and updates, and leave room for a future shop if that becomes useful.",
+    "primaryCtaLabel": "See the work",
+    "primaryCtaHref": "/portfolio.html",
+    "secondaryCtaLabel": "Read the blog",
+    "secondaryCtaHref": "/blog.html",
+    "panelEyebrow": "Current direction",
+    "panelText": "Personal bio, portfolio, blog, events, and contact now. Marketplace later if it makes sense.",
+    "overviewEyebrow": "Explore the site",
+    "overviewTitle": "Each main section now has its own page.",
+    "overviewText": "This keeps the homepage light and gives every topic room to grow without turning the site into a long scroll.",
+    "overviewCards": [
+      {
+        "eyebrow": "About",
+        "title": "Background, influences, and personality",
+        "text": "Use the About page for biography, personal context, and the story behind the work.",
+        "href": "/about.html",
+        "linkLabel": "Open About"
+      },
+      {
+        "eyebrow": "Portfolio",
+        "title": "Featured work and experiments",
+        "text": "Give artwork, projects, or collections their own dedicated presentation space.",
+        "href": "/portfolio.html",
+        "linkLabel": "Open Portfolio"
+      },
+      {
+        "eyebrow": "Blog",
+        "title": "Thoughts, notes, and updates",
+        "text": "Keep blog posts separate from the homepage so new writing can grow naturally over time.",
+        "href": "/blog.html",
+        "linkLabel": "Open Blog"
+      },
+      {
+        "eyebrow": "Events",
+        "title": "Local appearances and happenings",
+        "text": "Use the Events page for community updates, shows, talks, markets, and future appearances.",
+        "href": "/events.html",
+        "linkLabel": "Open Events"
+      }
+    ],
+    "futureEyebrow": "Future option",
+    "futureTitle": "A marketplace can be added later without rebuilding the site structure.",
+    "futureText": "For now the site stays focused on personality, work, writing, and community presence. If there is demand, a shop page or simple product section can be introduced later."
+  },
+  "about": {
+    "eyebrow": "About",
+    "title": "Introduce the person behind the work.",
+    "body": "Use this section for a short biography, background, influences, and what kind of work or ideas visitors can expect to find here. Keep it conversational and grounded.",
+    "highlights": [
+      {
+        "title": "Personal story",
+        "text": "Add a few sentences about your dad's background, interests, and what led him to create or share his work."
+      },
+      {
+        "title": "Creative range",
+        "text": "Mention the kinds of artwork, experiments, writing, or projects he wants people to explore."
+      },
+      {
+        "title": "Local connection",
+        "text": "Use this card for ties to the local community, exhibitions, events, collaborations, or places that matter to him."
+      }
+    ]
+  },
+  "contact": {
+    "eyebrow": "Contact",
+    "title": "Make it easy to reach out.",
+    "body": "Use the contact area for inquiries, local opportunities, commissions, or general conversation. If a shop is added later, this section can stay focused on direct connection.",
+    "emailLabel": "hello@example.com",
+    "emailHref": "mailto:hello@example.com",
+    "note": "Future option: add a shop page or simple product list if there is interest in selling work directly."
+  },
+  "footer": {
+    "text": "A simple multi-page baseline for your dad's bio, art, writing, and events.",
+    "linkLabel": "Get in touch"
+  }
+}

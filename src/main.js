@@ -1,3 +1,3 @@
-import { renderHomePage } from './render-page.js'
+import { renderPage } from './render-page.js'
 
-renderHomePage()
+renderPage('home')

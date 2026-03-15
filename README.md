@@ -1,6 +1,6 @@
 # Studio Baseline
 
-This repository is a plain Vite site baseline for local development. The current page is shaped as a personal bio, portfolio, blog, events, and contact site, with placeholder content that can be replaced incrementally as the real material becomes clearer.
+This repository is a plain Vite site baseline for local development. The site is now split into separate Home, About, Portfolio, Blog, Events, and Contact pages, with placeholder content that can be replaced incrementally as the real material becomes clearer.
 
 The easiest file to edit is [src/site-content.json](/E:/src/repos/dad's%20site/src/site-content.json). That file contains the page text, navigation labels, portfolio stubs, blog stubs, event stubs, and contact details without requiring layout edits.
 

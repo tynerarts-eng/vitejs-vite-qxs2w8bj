@@ -1,0 +1,104 @@
+{
+  "siteTitle": "Dad's Studio",
+  "nav": [
+    { "label": "About", "href": "#about" },
+    { "label": "Portfolio", "href": "#portfolio" },
+    { "label": "Blog", "href": "#blog" },
+    { "label": "Events", "href": "#events" },
+    { "label": "Contact", "href": "#contact" }
+  ],
+  "hero": {
+    "eyebrow": "Art, ideas, and local presence",
+    "title": "A personal site for artwork, writing, and whatever interesting thing comes next.",
+    "lede": "This homepage is designed to feel welcoming rather than salesy. It can introduce your dad, show selected work, share thoughts and updates, and leave room for a future shop if that becomes useful.",
+    "primaryCtaLabel": "See the work",
+    "primaryCtaHref": "#portfolio",
+    "secondaryCtaLabel": "Read the blog",
+    "secondaryCtaHref": "#blog",
+    "panelEyebrow": "Current direction",
+    "panelText": "Personal bio, portfolio, blog, events, and contact now. Marketplace later if it makes sense."
+  },
+  "about": {
+    "eyebrow": "About",
+    "title": "Introduce the person behind the work.",
+    "body": "Use this section for a short biography, background, influences, and what kind of work or ideas visitors can expect to find here. Keep it conversational and grounded.",
+    "highlights": [
+      {
+        "title": "Personal story",
+        "text": "Add a few sentences about your dad's background, interests, and what led him to create or share his work."
+      },
+      {
+        "title": "Creative range",
+        "text": "Mention the kinds of artwork, experiments, writing, or projects he wants people to explore."
+      },
+      {
+        "title": "Local connection",
+        "text": "Use this card for ties to the local community, exhibitions, events, collaborations, or places that matter to him."
+      }
+    ]
+  },
+  "portfolio": {
+    "eyebrow": "Portfolio",
+    "title": "Selected work and featured ideas.",
+    "intro": "These cards are placeholders for real pieces, collections, or categories. They can become paintings, prints, sketches, essays, or any other body of work.",
+    "items": [
+      {
+        "label": "Featured piece",
+        "title": "Work Title One",
+        "text": "Short description, medium, year, or a note about why this piece matters."
+      },
+      {
+        "label": "Series",
+        "title": "Collection or Theme",
+        "text": "Use this to group related work or talk about an ongoing idea your dad keeps returning to."
+      },
+      {
+        "label": "Experiment",
+        "title": "Something New",
+        "text": "Reserve space for newer directions, playful work, or pieces that do not fit a strict category."
+      }
+    ]
+  },
+  "blog": {
+    "eyebrow": "Blog",
+    "title": "Notes, reflections, and updates.",
+    "intro": "This can be used casually: studio thoughts, process notes, event recaps, ideas in progress, or stories from everyday life.",
+    "posts": [
+      {
+        "date": "Coming soon",
+        "title": "First post placeholder",
+        "text": "Add a short entry here once the first real post is ready."
+      },
+      {
+        "date": "Coming soon",
+        "title": "Behind-the-scenes update",
+        "text": "Use this for progress notes, a new piece, or a thought worth sharing with visitors."
+      }
+    ]
+  },
+  "events": {
+    "eyebrow": "Events",
+    "title": "Local happenings and upcoming appearances.",
+    "intro": "This section can highlight shows, markets, open studios, talks, or community appearances without turning the site into a hard sell.",
+    "items": [
+      {
+        "date": "TBD",
+        "name": "Upcoming event placeholder",
+        "details": "Add the event name, city, venue, and a short note once dates are confirmed."
+      },
+      {
+        "date": "TBD",
+        "name": "Community appearance placeholder",
+        "details": "Use this area for local participation, collaborations, or recurring appearances."
+      }
+    ]
+  },
+  "contact": {
+    "eyebrow": "Contact",
+    "title": "Make it easy to reach out.",
+    "body": "Use the contact area for inquiries, local opportunities, commissions, or general conversation. If a shop is added later, this section can stay focused on direct connection.",
+    "emailLabel": "hello@example.com",
+    "emailHref": "mailto:hello@example.com",
+    "note": "Future option: add a shop page or simple product list if there is interest in selling work directly."
+  }
+}

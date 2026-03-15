@@ -1,60 +1,139 @@
 import './style.css'
-import javascriptLogo from './assets/javascript.svg'
-import viteLogo from './assets/vite.svg'
 import heroImg from './assets/hero.png'
-import { setupCounter } from './counter.js'
+import siteContent from './site-content.json'
+
+const { siteTitle, nav, hero, about, portfolio, blog, events, contact } = siteContent
 
 document.querySelector('#app').innerHTML = `
-<section id="center">
-  <div class="hero">
-    <img src="${heroImg}" class="base" width="170" height="179">
-    <img src="${javascriptLogo}" class="framework" alt="JavaScript logo"/>
-    <img src=${viteLogo} class="vite" alt="Vite logo" />
-  </div>
-  <div>
-    <h1>Get started</h1>
-    <p>Edit <code>src/main.js</code> and save to test <code>HMR</code></p>
-  </div>
-  <button id="counter" type="button" class="counter"></button>
-</section>
+  <div class="site-shell">
+    <header class="hero" id="top">
+      <nav class="topbar" aria-label="Primary">
+        <a class="brand" href="#top">${siteTitle}</a>
+        <div class="nav-links">
+          ${nav.map((item) => `<a href="${item.href}">${item.label}</a>`).join('')}
+        </div>
+      </nav>
 
-<div class="ticks"></div>
+      <section class="hero-grid">
+        <div class="hero-copy">
+          <p class="eyebrow">${hero.eyebrow}</p>
+          <h1>${hero.title}</h1>
+          <p class="lede">${hero.lede}</p>
+          <div class="hero-actions">
+            <a class="button button-primary" href="${hero.primaryCtaHref}">${hero.primaryCtaLabel}</a>
+            <a class="button button-secondary" href="${hero.secondaryCtaHref}">${hero.secondaryCtaLabel}</a>
+          </div>
+        </div>
 
-<section id="next-steps">
-  <div id="docs">
-    <svg class="icon" role="presentation" aria-hidden="true"><use href="/icons.svg#documentation-icon"></use></svg>
-    <h2>Documentation</h2>
-    <p>Your questions, answered</p>
-    <ul>
-      <li>
-        <a href="https://vite.dev/" target="_blank">
-          <img class="logo" src=${viteLogo} alt="" />
-          Explore Vite
-        </a>
-      </li>
-      <li>
-        <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript" target="_blank">
-          <img class="button-icon" src="${javascriptLogo}" alt="">
-          Learn more
-        </a>
-      </li>
-    </ul>
-  </div>
-  <div id="social">
-    <svg class="icon" role="presentation" aria-hidden="true"><use href="/icons.svg#social-icon"></use></svg>
-    <h2>Connect with us</h2>
-    <p>Join the Vite community</p>
-    <ul>
-      <li><a href="https://github.com/vitejs/vite" target="_blank"><svg class="button-icon" role="presentation" aria-hidden="true"><use href="/icons.svg#github-icon"></use></svg>GitHub</a></li>
-      <li><a href="https://chat.vite.dev/" target="_blank"><svg class="button-icon" role="presentation" aria-hidden="true"><use href="/icons.svg#discord-icon"></use></svg>Discord</a></li>
-      <li><a href="https://x.com/vite_js" target="_blank"><svg class="button-icon" role="presentation" aria-hidden="true"><use href="/icons.svg#x-icon"></use></svg>X.com</a></li>
-      <li><a href="https://bsky.app/profile/vite.dev" target="_blank"><svg class="button-icon" role="presentation" aria-hidden="true"><use href="/icons.svg#bluesky-icon"></use></svg>Bluesky</a></li>
-    </ul>
-  </div>
-</section>
+        <div class="hero-panel" aria-label="Site preview">
+          <img src="${heroImg}" alt="Abstract placeholder artwork" />
+          <div class="hero-panel-copy">
+            <p>${hero.panelEyebrow}</p>
+            <strong>${hero.panelText}</strong>
+          </div>
+        </div>
+      </section>
+    </header>
 
-<div class="ticks"></div>
-<section id="spacer"></section>
+    <main>
+      <section class="section section-intro" id="about">
+        <div class="section-heading">
+          <p class="eyebrow">${about.eyebrow}</p>
+          <h2>${about.title}</h2>
+        </div>
+        <p class="section-intro-copy">${about.body}</p>
+        <div class="highlights">
+          ${about.highlights
+            .map(
+              (item) => `
+                <article class="highlight">
+                  <h3>${item.title}</h3>
+                  <p>${item.text}</p>
+                </article>
+              `,
+            )
+            .join('')}
+        </div>
+      </section>
+
+      <section class="section section-cards" id="portfolio">
+        <div class="section-heading">
+          <p class="eyebrow">${portfolio.eyebrow}</p>
+          <h2>${portfolio.title}</h2>
+        </div>
+        <p class="section-intro-copy">${portfolio.intro}</p>
+        <div class="card-grid">
+          ${portfolio.items
+            .map(
+              (item) => `
+                <article class="card">
+                  <p class="card-eyebrow">${item.label}</p>
+                  <h3>${item.title}</h3>
+                  <p>${item.text}</p>
+                </article>
+              `,
+            )
+            .join('')}
+        </div>
+      </section>
+
+      <section class="section section-blog" id="blog">
+        <div class="section-heading">
+          <p class="eyebrow">${blog.eyebrow}</p>
+          <h2>${blog.title}</h2>
+        </div>
+        <p class="section-intro-copy">${blog.intro}</p>
+        <div class="blog-list">
+          ${blog.posts
+            .map(
+              (post) => `
+                <article class="post">
+                  <p class="card-eyebrow">${post.date}</p>
+                  <h3>${post.title}</h3>
+                  <p>${post.text}</p>
+                </article>
+              `,
+            )
+            .join('')}
+        </div>
+      </section>
+
+      <section class="section section-events" id="events">
+        <div class="section-heading">
+          <p class="eyebrow">${events.eyebrow}</p>
+          <h2>${events.title}</h2>
+        </div>
+        <p class="section-intro-copy">${events.intro}</p>
+        <div class="event-list">
+          ${events.items
+            .map(
+              (event) => `
+                <article class="event">
+                  <span>${event.date}</span>
+                  <div>
+                    <h3>${event.name}</h3>
+                    <p>${event.details}</p>
+                  </div>
+                </article>
+              `,
+            )
+            .join('')}
+        </div>
+      </section>
+
+      <section class="section section-contact" id="contact">
+        <div class="contact-panel">
+          <div>
+            <p class="eyebrow">${contact.eyebrow}</p>
+            <h2>${contact.title}</h2>
+          </div>
+          <div class="contact-details">
+            <p>${contact.body}</p>
+            <a class="button button-primary" href="${contact.emailHref}">${contact.emailLabel}</a>
+            <p class="contact-note">${contact.note}</p>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
 `
-
-setupCounter(document.querySelector('#counter'))

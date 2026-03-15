@@ -1,3 +1,3 @@
-import { renderSectionPage } from './render-page.js'
+import { renderPage } from './render-page.js'
 
-renderSectionPage('about')
+renderPage('about')

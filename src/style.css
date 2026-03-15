@@ -276,7 +276,8 @@ h3 {
 
 .highlights,
 .card-grid,
-.blog-list {
+.blog-list,
+.gallery-grid {
   display: grid;
   gap: 20px;
 }
@@ -287,6 +288,10 @@ h3 {
 }
 
 .blog-list {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.gallery-grid {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
@@ -301,6 +306,12 @@ h3 {
 .event-list {
   display: grid;
   gap: 16px;
+}
+
+.event-columns {
+  display: grid;
+  gap: 24px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .event {
@@ -346,13 +357,172 @@ h3 {
   text-decoration: none;
 }
 
+.section-stack {
+  display: grid;
+  gap: 20px;
+}
+
+.gallery-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 22px;
+  overflow: hidden;
+}
+
+.gallery-card img,
+.admin-thumb {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+}
+
+.gallery-copy {
+  padding: 20px;
+}
+
+.gallery-copy h4 {
+  margin: 0 0 10px;
+  font-size: 1.2rem;
+}
+
+.gallery-meta {
+  font-size: 0.92rem;
+}
+
+.gallery-placeholder {
+  display: grid;
+  place-items: center;
+  min-height: 240px;
+  color: var(--muted);
+  background: rgba(0, 0, 0, 0.03);
+}
+
+.rich-copy > :first-child {
+  margin-top: 0;
+}
+
+.admin-login {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+}
+
+.admin-shell {
+  width: min(calc(100% - 24px), 1440px);
+  margin: 12px auto;
+  display: grid;
+  grid-template-columns: 280px minmax(0, 1fr);
+  gap: 20px;
+}
+
+.admin-sidebar,
+.admin-card,
+.admin-subcard {
+  background: var(--surface-strong);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  padding: 24px;
+  box-shadow: var(--shadow);
+}
+
+.admin-main,
+.admin-list,
+.admin-form {
+  display: grid;
+  gap: 16px;
+}
+
+.admin-nav {
+  display: grid;
+  gap: 10px;
+  margin: 24px 0;
+}
+
+.admin-nav button,
+.editor-toolbar button {
+  font: inherit;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.7);
+  padding: 10px 14px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.admin-nav .is-active {
+  background: var(--accent);
+  color: #fff8f2;
+  border-color: var(--accent);
+}
+
+.admin-form label {
+  display: grid;
+  gap: 8px;
+  color: var(--heading);
+}
+
+.admin-form input,
+.admin-form textarea {
+  width: 100%;
+  font: inherit;
+  padding: 12px 14px;
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.82);
+}
+
+.admin-form textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.admin-header-row,
+.admin-inline-actions,
+.editor-toolbar {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.admin-card h1,
+.admin-card h2,
+.admin-subcard h3,
+.admin-subcard h4,
+.admin-sidebar h1 {
+  max-width: none;
+}
+
+.admin-error {
+  color: #8e1d12;
+}
+
+.rich-editor {
+  min-height: 180px;
+  padding: 16px;
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.86);
+}
+
+.admin-checkbox {
+  display: flex !important;
+  align-items: center;
+  gap: 10px !important;
+}
+
 @media (max-width: 900px) {
   .hero-home .hero-grid,
   .highlights,
   .card-grid,
   .blog-list,
+  .gallery-grid,
   .contact-panel,
-  .event {
+  .event,
+  .event-columns,
+  .admin-shell {
     grid-template-columns: 1fr;
   }
 

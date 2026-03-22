@@ -370,9 +370,28 @@ h3 {
   gap: 16px;
 }
 
+.site-footer-links {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+
 .site-footer a {
   color: var(--accent-strong);
   text-decoration: none;
+}
+
+.social-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.social-link svg {
+  width: 18px;
+  height: 18px;
+  fill: currentColor;
 }
 
 .section-stack {

@@ -103,7 +103,7 @@
     "title": "Make it easy to reach out.",
     "body": "Use the contact area for inquiries, local opportunities, commissions, or general conversation. If a shop is added later, this section can stay focused on direct connection.",
     "emailLabel": "bruce@tyner.ca",
-    "emailHref": "mailto:bruce@tyner.ca",
+    "emailHref": "mailto;bruce@tyner.ca",
     "note": "Future option: add a shop page or simple product list if there is interest in selling work directly."
   },
   "footer": {

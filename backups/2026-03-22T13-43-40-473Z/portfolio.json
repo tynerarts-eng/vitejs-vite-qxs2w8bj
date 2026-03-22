@@ -125,14 +125,6 @@
           "sortOrder": 80
         }
       ]
-    },
-    {
-      "id": "new-collection",
-      "title": "New collection",
-      "description": "",
-      "sortOrder": 20,
-      "status": "published",
-      "items": []
     }
   ]
 }

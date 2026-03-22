@@ -52,6 +52,16 @@ function renderShell(site, contact, currentPage, heroMarkup, bodyMarkup) {
             </svg>
             <span>Instagram</span>
           </a>
+          <a
+            class="social-link"
+            href="https://www.facebook.com/tynerart/"
+            target="_blank"
+            rel="noreferrer"
+           aria-label="Follow Bruce Tyner Fine Art on Facebook"
+           >
+           <path d="M22 12.07C22 6.48 17.52 2 11.93 2 6.34 2 2 6.48 2 12.07 2 17.03 5.66 21.2 10.44 22v-7.02H8.08V12.1h2.36V9.88c0-2.33 1.39-3.61 3.52-3.61 1.02 0 2.09.18 2.09.18v2.3h-1.18c-1.16 0-1.52.72-1.52 1.46v1.74h2.59l-.41 2.88h-2.18V22C18.34 21.2 22 17.03 22 12.07z"/>
+           </svg>
+           <span>Facebook</span>
         </div>
       </footer>
     </div>

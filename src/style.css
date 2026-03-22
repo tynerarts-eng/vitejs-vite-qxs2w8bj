@@ -517,6 +517,67 @@ h3 {
   color: #8e1d12;
 }
 
+.admin-collection-meta {
+  margin: 6px 0 0;
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
+.admin-thumb-grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+}
+
+.admin-thumb-card {
+  display: grid;
+  gap: 10px;
+  width: 100%;
+  padding: 12px;
+  border-radius: 18px;
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--heading);
+  text-align: left;
+  cursor: pointer;
+}
+
+.admin-thumb-card:hover,
+.admin-thumb-card:focus-visible {
+  border-color: var(--accent);
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.admin-thumb-title {
+  font-size: 0.95rem;
+  line-height: 1.2;
+}
+
+.admin-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(7, 10, 14, 0.72);
+  z-index: 50;
+}
+
+.admin-modal {
+  width: min(100%, 760px);
+  max-height: calc(100vh - 48px);
+  overflow: auto;
+  padding: 24px;
+  border-radius: 24px;
+  border: 1px solid var(--border);
+  background: var(--surface-strong);
+  box-shadow: var(--shadow);
+}
+
+.admin-modal-thumb {
+  border-radius: 20px;
+}
+
 .rich-editor {
   min-height: 180px;
   padding: 16px;
@@ -552,6 +613,10 @@ h3 {
   .site-footer {
     align-items: flex-start;
     flex-direction: column;
+  }
+
+  .admin-modal {
+    width: 100%;
   }
 }
 

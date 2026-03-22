@@ -5,6 +5,8 @@ const state = {
   authenticated: false,
   content: null,
   activeTab: 'site',
+  collapsedCollections: {},
+  portfolioModalItemId: null,
 }
 
 function escapeHtml(value = '') {
@@ -91,14 +93,28 @@ function portfolioTab(portfolio) {
       <div class="admin-list">
         ${portfolio.collections
           .map(
-            (collection) => `
+            (collection) => {
+              const isCollapsed = state.collapsedCollections[collection.id] ?? false
+              const itemCount = collection.items.length
+
+              return `
               <article class="admin-subcard">
+                <div class="admin-header-row">
+                  <div>
+                    <h3>${escapeHtml(collection.title)}</h3>
+                    <p class="admin-collection-meta">${itemCount} ${itemCount === 1 ? 'piece' : 'pieces'}</p>
+                  </div>
+                  <div class="admin-inline-actions">
+                    <button type="button" class="button button-secondary collectionToggle" data-id="${collection.id}">
+                      ${isCollapsed ? 'Expand' : 'Collapse'}
+                    </button>
+                    <button type="button" class="button button-secondary collectionDelete" data-id="${collection.id}">Delete</button>
+                  </div>
+                </div>
+                ${isCollapsed ? '' : `
                 <form class="collectionForm admin-form" data-id="${collection.id}">
                   <div class="admin-header-row">
-                    <h3>${escapeHtml(collection.title)}</h3>
-                    <div class="admin-inline-actions">
-                      <button type="button" class="button button-secondary collectionDelete" data-id="${collection.id}">Delete</button>
-                    </div>
+                    <h4>Collection details</h4>
                   </div>
                   <label>Title<input name="title" value="${escapeHtml(collection.title)}" /></label>
                   <label>Description<textarea name="description">${escapeHtml(collection.description || '')}</textarea></label>
@@ -106,41 +122,81 @@ function portfolioTab(portfolio) {
                   <label>Sort order<input name="sortOrder" type="number" value="${collection.sortOrder || 0}" /></label>
                   <button class="button button-primary" type="submit">Save collection</button>
                 </form>
-                <form class="uploadForm admin-form" data-id="${collection.id}">
-                  <label>Upload images<input name="images" type="file" multiple accept="image/*" /></label>
-                  <button class="button button-secondary" type="submit">Upload and create items</button>
-                </form>
-                <div class="admin-list">
+                <div class="admin-header-row">
+                  <h4>Collection items</h4>
+                  <div>
+                    <input class="collectionFileInput" data-id="${collection.id}" name="images" type="file" multiple accept="image/*" hidden />
+                    <button type="button" class="button button-secondary addPictureButton" data-id="${collection.id}">Add picture</button>
+                  </div>
+                </div>
+                <div class="admin-thumb-grid">
                   ${collection.items
                     .map(
                       (item) => `
-                        <form class="itemForm admin-form admin-subcard" data-id="${item.id}">
-                          <div class="admin-header-row">
-                            <h4>${escapeHtml(item.title)}</h4>
-                            <button type="button" class="button button-secondary itemDelete" data-id="${item.id}">Delete</button>
-                          </div>
-                          ${item.thumbnailPath ? `<img class="admin-thumb" src="${item.thumbnailPath}" alt="${escapeHtml(item.altText || item.title)}" />` : ''}
-                          <input type="hidden" name="collectionId" value="${escapeHtml(item.collectionId)}" />
-                          <label>Title<input name="title" value="${escapeHtml(item.title)}" /></label>
-                          <label>Alt text<input name="altText" value="${escapeHtml(item.altText || '')}" /></label>
-                          <label>Caption<textarea name="caption">${escapeHtml(item.caption || '')}</textarea></label>
-                          <label>Year<input name="year" value="${escapeHtml(item.year || '')}" /></label>
-                          <label>Medium<input name="medium" value="${escapeHtml(item.medium || '')}" /></label>
-                          <label>Dimensions<input name="dimensions" value="${escapeHtml(item.dimensions || '')}" /></label>
-                          <label>Status<input name="status" value="${escapeHtml(item.status || '')}" /></label>
-                          <label>Sort order<input name="sortOrder" type="number" value="${item.sortOrder || 0}" /></label>
-                          <button class="button button-primary" type="submit">Save item</button>
-                        </form>
+                        <button type="button" class="admin-thumb-card itemEditorButton" data-id="${item.id}" aria-label="Edit ${escapeHtml(item.title)}">
+                          ${
+                            item.thumbnailPath
+                              ? `<img class="admin-thumb" src="${item.thumbnailPath}" alt="${escapeHtml(item.altText || item.title)}" />`
+                              : '<div class="gallery-placeholder">Awaiting image</div>'
+                          }
+                          <span class="admin-thumb-title">${escapeHtml(item.title)}</span>
+                        </button>
                       `,
                     )
                     .join('')}
                 </div>
+                `}
               </article>
-            `,
+            `
+            },
           )
           .join('')}
       </div>
     </section>
+  `
+}
+
+function findPortfolioItem(itemId) {
+  if (!itemId || !state.content?.portfolio) return null
+  for (const collection of state.content.portfolio.collections) {
+    const item = collection.items.find((entry) => entry.id === itemId)
+    if (item) return item
+  }
+  return null
+}
+
+function portfolioItemModal() {
+  const item = findPortfolioItem(state.portfolioModalItemId)
+  if (!item) return ''
+
+  return `
+    <div class="admin-modal-backdrop" data-close-modal="true">
+      <div class="admin-modal" role="dialog" aria-modal="true" aria-labelledby="portfolioItemModalTitle">
+        <div class="admin-header-row">
+          <div>
+            <p class="eyebrow">Portfolio item</p>
+            <h3 id="portfolioItemModalTitle">${escapeHtml(item.title)}</h3>
+          </div>
+          <button type="button" class="button button-secondary modalCloseButton">Close</button>
+        </div>
+        <form class="itemForm admin-form" data-id="${item.id}">
+          <input type="hidden" name="collectionId" value="${escapeHtml(item.collectionId)}" />
+          ${item.thumbnailPath ? `<img class="admin-thumb admin-modal-thumb" src="${item.thumbnailPath}" alt="${escapeHtml(item.altText || item.title)}" />` : ''}
+          <label>Title<input name="title" value="${escapeHtml(item.title)}" /></label>
+          <label>Alt text<input name="altText" value="${escapeHtml(item.altText || '')}" /></label>
+          <label>Caption<textarea name="caption">${escapeHtml(item.caption || '')}</textarea></label>
+          <label>Year<input name="year" value="${escapeHtml(item.year || '')}" /></label>
+          <label>Medium<input name="medium" value="${escapeHtml(item.medium || '')}" /></label>
+          <label>Dimensions<input name="dimensions" value="${escapeHtml(item.dimensions || '')}" /></label>
+          <label>Status<input name="status" value="${escapeHtml(item.status || '')}" /></label>
+          <label>Sort order<input name="sortOrder" type="number" value="${item.sortOrder || 0}" /></label>
+          <div class="admin-inline-actions">
+            <button class="button button-primary" type="submit">Save item</button>
+            <button type="button" class="button button-secondary itemDelete" data-id="${item.id}">Delete</button>
+          </div>
+        </form>
+      </div>
+    </div>
   `
 }
 
@@ -236,7 +292,7 @@ function renderAdmin() {
     events: eventsTab(content.events),
   }
 
-  document.querySelector('#app').innerHTML = layout(tabMarkup[state.activeTab])
+  document.querySelector('#app').innerHTML = `${layout(tabMarkup[state.activeTab])}${state.activeTab === 'portfolio' ? portfolioItemModal() : ''}`
   bindAdminEvents()
 }
 
@@ -280,9 +336,18 @@ function bindAdminEvents() {
   })
 
   document.querySelector('#newCollectionButton')?.addEventListener('click', async () => {
-    await sendJson('/api/admin/portfolio/collections', 'POST', { title: 'New collection' })
+    const created = await sendJson('/api/admin/portfolio/collections', 'POST', { title: 'New collection' })
+    state.collapsedCollections[created.id] = false
     await refresh()
   })
+
+  document.querySelectorAll('.collectionToggle').forEach((button) =>
+    button.addEventListener('click', () => {
+      const current = state.collapsedCollections[button.dataset.id] ?? false
+      state.collapsedCollections[button.dataset.id] = !current
+      renderAdmin()
+    }),
+  )
 
   document.querySelectorAll('.collectionForm').forEach((form) =>
     form.addEventListener('submit', async (event) => {
@@ -304,17 +369,35 @@ function bindAdminEvents() {
     }),
   )
 
-  document.querySelectorAll('.uploadForm').forEach((form) =>
-    form.addEventListener('submit', async (event) => {
-      event.preventDefault()
-      const payload = new FormData(form)
-      payload.set('collectionId', form.dataset.id)
+  document.querySelectorAll('.addPictureButton').forEach((button) =>
+    button.addEventListener('click', () => {
+      document.querySelector(`.collectionFileInput[data-id="${button.dataset.id}"]`)?.click()
+    }),
+  )
+
+  document.querySelectorAll('.collectionFileInput').forEach((input) =>
+    input.addEventListener('change', async () => {
+      if (!input.files?.length) return
+      const payload = new FormData()
+      for (const file of input.files) {
+        payload.append('images', file)
+      }
+      payload.set('collectionId', input.dataset.id)
       const response = await fetch('/api/admin/portfolio/upload', { method: 'POST', body: payload })
       if (!response.ok) {
         const data = await response.json().catch(() => ({}))
         throw new Error(data.error || `Upload failed with ${response.status}`)
       }
+      const createdItems = await response.json()
+      state.portfolioModalItemId = createdItems[0]?.id || null
       await refresh()
+    }),
+  )
+
+  document.querySelectorAll('.itemEditorButton').forEach((button) =>
+    button.addEventListener('click', () => {
+      state.portfolioModalItemId = button.dataset.id
+      renderAdmin()
     }),
   )
 
@@ -326,6 +409,7 @@ function bindAdminEvents() {
         ...values,
         sortOrder: Number(values.sortOrder || 0),
       })
+      state.portfolioModalItemId = form.dataset.id
       await refresh()
     }),
   )
@@ -334,9 +418,22 @@ function bindAdminEvents() {
     button.addEventListener('click', async () => {
       if (!confirm('Delete this portfolio item?')) return
       await sendJson(`/api/admin/portfolio/items/${button.dataset.id}`, 'DELETE')
+      state.portfolioModalItemId = null
       await refresh()
     }),
   )
+
+  document.querySelector('.modalCloseButton')?.addEventListener('click', () => {
+    state.portfolioModalItemId = null
+    renderAdmin()
+  })
+
+  document.querySelector('.admin-modal-backdrop')?.addEventListener('click', (event) => {
+    if (event.target instanceof HTMLElement && event.target.dataset.closeModal === 'true') {
+      state.portfolioModalItemId = null
+      renderAdmin()
+    }
+  })
 
   document.querySelector('#newPostButton')?.addEventListener('click', async () => {
     await sendJson('/api/admin/blog', 'POST', { title: 'New post', published: false })

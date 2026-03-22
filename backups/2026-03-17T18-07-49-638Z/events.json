@@ -1,0 +1,31 @@
+{
+  "intro": {
+    "eyebrow": "Events",
+    "title": "Local happenings and upcoming appearances.",
+    "intro": "This section can highlight shows, markets, open studios, talks, or community appearances without turning the site into a hard sell."
+  },
+  "events": [
+    {
+      "id": "upcoming-event-placeholder",
+      "title": "Upcoming event placeholder",
+      "startDate": "",
+      "endDate": "",
+      "location": "",
+      "venue": "",
+      "description": "Add the event name, city, venue, and a short note once dates are confirmed.",
+      "status": "upcoming",
+      "sortOrder": 10
+    },
+    {
+      "id": "community-appearance-placeholder",
+      "title": "Community appearance placeholder",
+      "startDate": "",
+      "endDate": "",
+      "location": "",
+      "venue": "",
+      "description": "Use this area for local participation, collaborations, or recurring appearances.",
+      "status": "past",
+      "sortOrder": 20
+    }
+  ]
+}

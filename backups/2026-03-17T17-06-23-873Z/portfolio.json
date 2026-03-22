@@ -1,0 +1,74 @@
+{
+  "intro": {
+    "eyebrow": "Portfolio",
+    "title": "Selected work and featured ideas.",
+    "intro": "These cards are placeholders for real pieces, collections, or categories. They can become paintings, prints, sketches, essays, or any other body of work."
+  },
+  "collections": [
+    {
+      "id": "featured-work",
+      "title": "VanGough",
+      "description": "Me",
+      "sortOrder": 1,
+      "status": "published",
+      "items": [
+        {
+          "id": "work-title-one",
+          "collectionId": "featured-work",
+          "title": "Work Title One",
+          "originalPath": "",
+          "thumbnailPath": "",
+          "altText": "Placeholder artwork",
+          "caption": "Short description, medium, year, or a note about why this piece matters.",
+          "year": "",
+          "medium": "",
+          "dimensions": "",
+          "status": "published",
+          "sortOrder": 10
+        },
+        {
+          "id": "collection-or-theme",
+          "collectionId": "featured-work",
+          "title": "selfie",
+          "originalPath": "",
+          "thumbnailPath": "",
+          "altText": "2016",
+          "caption": "Use this to group related work or talk about an ongoing idea your dad keeps returning to.",
+          "year": "2016",
+          "medium": "AI",
+          "dimensions": "",
+          "status": "draft",
+          "sortOrder": 20
+        },
+        {
+          "id": "art-4a66298a",
+          "collectionId": "featured-work",
+          "title": "selfie",
+          "originalPath": "/media/originals/1773588339845-selfie.jpg",
+          "thumbnailPath": "/media/thumbnails/1773588339845-selfie.jpg",
+          "altText": "selfie",
+          "caption": "",
+          "year": "",
+          "medium": "",
+          "dimensions": "",
+          "status": "published",
+          "sortOrder": 30
+        },
+        {
+          "id": "art-7ad2d8d7",
+          "collectionId": "featured-work",
+          "title": "VanGough Me",
+          "originalPath": "/media/originals/1773765376212-artist-outside-vangogh.jpeg",
+          "thumbnailPath": "/media/thumbnails/1773765376212-artist-outside-vangogh.jpg",
+          "altText": "AI create image of me outside my studio",
+          "caption": "Just having a little fun with AI",
+          "year": "2025",
+          "medium": "Digital AI",
+          "dimensions": "12x12",
+          "status": "published",
+          "sortOrder": 60
+        }
+      ]
+    }
+  ]
+}

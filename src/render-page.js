@@ -25,6 +25,7 @@ function renderShell(site, contact, currentPage, heroMarkup, bodyMarkup) {
     <div class="site-shell">
       <header class="hero ${currentPage === 'home' ? 'hero-home' : 'hero-subpage'}" id="top">
         <nav class="topbar" aria-label="Primary">
+        </a>
           <a class="brand" href="/">${escapeHtml(site.siteTitle)}</a>
           <div class="nav-links">
             ${renderNav(site, currentPage)}
@@ -191,6 +192,13 @@ export async function renderPage(currentPage) {
         'home',
         `
           <section class="hero-grid">
+            <div class="hero-panel" aria-label="Site preview">
+              <img src="${heroImg}" alt="Abstract placeholder artwork" />
+              <div class="hero-panel-copy">
+                <p>${escapeHtml(site.home.panelEyebrow)}</p>
+                <strong>${escapeHtml(site.home.panelText)}</strong>
+              </div>
+            </div>
             <div class="hero-copy">
               <p class="eyebrow">${escapeHtml(site.home.eyebrow)}</p>
               <h1>${escapeHtml(site.home.title)}</h1>
@@ -198,14 +206,6 @@ export async function renderPage(currentPage) {
               <div class="hero-actions">
                 <a class="button button-primary" href="${site.home.primaryCtaHref}">${escapeHtml(site.home.primaryCtaLabel)}</a>
                 <a class="button button-secondary" href="${site.home.secondaryCtaHref}">${escapeHtml(site.home.secondaryCtaLabel)}</a>
-              </div>
-            </div>
-
-            <div class="hero-panel" aria-label="Site preview">
-              <img src="${heroImg}" alt="Abstract placeholder artwork" />
-              <div class="hero-panel-copy">
-                <p>${escapeHtml(site.home.panelEyebrow)}</p>
-                <strong>${escapeHtml(site.home.panelText)}</strong>
               </div>
             </div>
           </section>

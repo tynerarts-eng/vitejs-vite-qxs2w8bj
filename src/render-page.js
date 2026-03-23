@@ -1,3 +1,17 @@
+// Render a gallery for the studio page
+function renderStudioGallery(images) {
+  if (!images || images.length === 0) return ''
+  return images
+    .map(
+      (image) => `
+        <figure class="studio-gallery-item">
+          ${image.path ? `<img src="${image.path}" alt="${escapeHtml(image.alt || image.caption)}" />` : ''}
+          ${image.caption ? `<figcaption>${escapeHtml(image.caption)}</figcaption>` : ''}
+        </figure>
+      `,
+    )
+    .join('')
+}
 import './style.css'
 import heroImg from './assets/hero.png'
 import { fetchContent } from './content-api.js'
@@ -57,11 +71,13 @@ function renderShell(site, contact, currentPage, heroMarkup, bodyMarkup) {
             href="https://www.facebook.com/tynerart/"
             target="_blank"
             rel="noreferrer"
-           aria-label="Follow Bruce Tyner Fine Art on Facebook"
-           >
-           <path d="M22 12.07C22 6.48 17.52 2 11.93 2 6.34 2 2 6.48 2 12.07 2 17.03 5.66 21.2 10.44 22v-7.02H8.08V12.1h2.36V9.88c0-2.33 1.39-3.61 3.52-3.61 1.02 0 2.09.18 2.09.18v2.3h-1.18c-1.16 0-1.52.72-1.52 1.46v1.74h2.59l-.41 2.88h-2.18V22C18.34 21.2 22 17.03 22 12.07z"/>
-           </svg>
-           <span>Facebook</span>
+            aria-label="Follow Bruce Tyner Fine Art on Facebook"
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M22 12.07C22 6.48 17.52 2 11.93 2 6.34 2 2 6.48 2 12.07 2 17.03 5.66 21.2 10.44 22v-7.02H8.08V12.1h2.36V9.88c0-2.33 1.39-3.61 3.52-3.61 1.02 0 2.09.18 2.09.18v2.3h-1.18c-1.16 0-1.52.72-1.52 1.46v1.74h2.59l-.41 2.88h-2.18V22C18.34 21.2 22 17.03 22 12.07z"/>
+            </svg>
+            <span>Facebook</span>
+          </a>
            </a>
             <a
             class="social-link"
@@ -336,6 +352,44 @@ export async function renderPage(currentPage) {
                 <h3>Past</h3>
                 <div class="event-list">${renderEvents(content.events.past)}</div>
               </div>
+            </div>
+          </section>
+        `,
+      },
+      studio: {
+        hero: content.studio,
+        body: `
+          <section class="section">
+            <div class="section-heading">
+              <p class="eyebrow">${escapeHtml(content.studio.eyebrow)}</p>
+              <h2>${escapeHtml(content.studio.title)}</h2>
+            </div>
+            <p class="section-intro-copy">${escapeHtml(content.studio.body)}</p>
+            ${
+              content.studio.studioImages && content.studio.studioImages.length > 0
+                ? `
+              <div class="studio-gallery">
+                ${renderStudioGallery(content.studio.studioImages)}
+              </div>
+            `
+                : ''
+            }
+            <div class="studio-info">
+              <div class="studio-location">
+                <h3>Location</h3>
+                <p class="studio-address">${escapeHtml(content.studio.location.address)}</p>
+                <p class="studio-city">${escapeHtml(content.studio.location.city)}</p>
+                <p class="studio-direction">${escapeHtml(content.studio.location.direction)}</p>
+                <p class="studio-hours">${escapeHtml(content.studio.location.hours)}</p>
+                ${
+                  content.studio.location.mapUrl
+                    ? `<a class="button button-primary" href="${content.studio.location.mapUrl}" target="_blank" rel="noopener noreferrer">View on Map</a>`
+                    : ''
+                }
+              </div>
+            </div>
+            <div class="highlights">
+              ${renderHighlights(content.studio.highlights)}
             </div>
           </section>
         `,

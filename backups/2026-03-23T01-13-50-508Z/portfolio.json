@@ -128,26 +128,11 @@
     },
     {
       "id": "new-collection",
-      "title": "in Progress",
-      "description": "Various projects in various stages of completion",
+      "title": "New collection",
+      "description": "",
       "sortOrder": 20,
-      "status": "work in progress",
-      "items": [
-        {
-          "id": "art-526c9152",
-          "collectionId": "new-collection",
-          "title": "UV RIDER BL MODIFIED",
-          "originalPath": "/media/originals/1774228452033-uv-rider-bl-modified.jpg",
-          "thumbnailPath": "/media/thumbnails/1774228452033-uv-rider-bl-modified.jpg",
-          "altText": "UV RIDER BL MODIFIED",
-          "caption": "",
-          "year": "",
-          "medium": "",
-          "dimensions": "",
-          "status": "published",
-          "sortOrder": 10
-        }
-      ]
+      "status": "published",
+      "items": []
     }
   ]
 }

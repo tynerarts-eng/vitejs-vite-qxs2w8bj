@@ -290,7 +290,7 @@ a.button {
 }
 
 .brand {
-  font-size: 0.8rem;
+  font-size: 1.00rem;
   text-decoration: none;
 }
 
@@ -839,7 +839,7 @@ h3 {
 .admin-inline-actions,
 .editor-toolbar {
   display: flex;
-  gap: 12px;
+  gap: 48px;
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;

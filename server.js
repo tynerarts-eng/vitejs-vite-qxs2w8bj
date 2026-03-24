@@ -16,6 +16,18 @@ const port = Number(process.env.PORT || 3000)
 const adminRoute = process.env.ADMIN_ROUTE || '/studio-admin'
 const adminPassword = process.env.ADMIN_PASSWORD || 'change-me-admin'
 const sessionSecret = process.env.SESSION_SECRET || 'change-me-session-secret'
+const sessionMaxAgeMs = Number.isFinite(Number(process.env.SESSION_MAX_AGE_MS))
+  ? Number(process.env.SESSION_MAX_AGE_MS)
+  : 1000 * 60 * 60 * 4
+const loginWindowMs = Number.isFinite(Number(process.env.ADMIN_LOGIN_WINDOW_MS))
+  ? Number(process.env.ADMIN_LOGIN_WINDOW_MS)
+  : 1000 * 60 * 15
+const loginMaxAttempts = Number.isFinite(Number(process.env.ADMIN_LOGIN_MAX_ATTEMPTS))
+  ? Number(process.env.ADMIN_LOGIN_MAX_ATTEMPTS)
+  : 5
+const defaultAdminPassword = 'change-me-admin'
+const defaultSessionSecret = 'change-me-session-secret'
+const loginAttempts = new Map()
 
 const dataDir = path.join(__dirname, 'data')
 const mediaDir = path.join(__dirname, 'public', 'media')
@@ -31,6 +43,8 @@ const dataFiles = {
   events: path.join(dataDir, 'events.json'),
   studio: path.join(dataDir, 'studio.json'),
 }
+
+app.set('trust proxy', 1)
 
 async function ensureDirectories() {
   await Promise.all([
@@ -68,12 +82,45 @@ function verifySession(token) {
   const [body, signature] = token.split('.')
   if (!body || !signature) return null
   const expected = crypto.createHmac('sha256', sessionSecret).update(body).digest('base64url')
+  if (signature.length !== expected.length) return null
   if (!crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(expected))) return null
   try {
-    return JSON.parse(Buffer.from(body, 'base64url').toString('utf8'))
+    const session = JSON.parse(Buffer.from(body, 'base64url').toString('utf8'))
+    if (!session?.expiresAt || session.expiresAt <= Date.now()) return null
+    return session
   } catch {
     return null
   }
+}
+
+function getRequestProtocol(req) {
+  const forwardedProto = req.headers['x-forwarded-proto']
+  if (typeof forwardedProto === 'string' && forwardedProto.length > 0) {
+    return forwardedProto.split(',')[0].trim().toLowerCase()
+  }
+  return req.protocol
+}
+
+function shouldUseSecureCookies(req) {
+  return getRequestProtocol(req) === 'https'
+}
+
+function serializeSessionCookie(req, token, maxAgeSeconds) {
+  const parts = [
+    `admin_session=${encodeURIComponent(token)}`,
+    'Path=/',
+    'HttpOnly',
+    'SameSite=Lax',
+    `Max-Age=${maxAgeSeconds}`,
+  ]
+  if (shouldUseSecureCookies(req)) {
+    parts.push('Secure')
+  }
+  return parts.join('; ')
+}
+
+function clearSessionCookie(req, res) {
+  res.setHeader('Set-Cookie', serializeSessionCookie(req, '', 0))
 }
 
 function parseCookies(req) {
@@ -93,10 +140,52 @@ function requireAuth(req, res, next) {
   const cookies = parseCookies(req)
   const session = verifySession(cookies.admin_session)
   if (!session?.authenticated) {
+    clearSessionCookie(req, res)
     return res.status(401).json({ error: 'Authentication required.' })
   }
   req.session = session
   next()
+}
+
+function getClientIdentifier(req) {
+  return req.ip || req.socket.remoteAddress || 'unknown'
+}
+
+function getLoginAttemptState(key) {
+  const now = Date.now()
+  const existing = loginAttempts.get(key)
+  if (!existing || existing.resetAt <= now) {
+    const fresh = { count: 0, resetAt: now + loginWindowMs }
+    loginAttempts.set(key, fresh)
+    return fresh
+  }
+  return existing
+}
+
+function recordFailedLoginAttempt(req) {
+  const state = getLoginAttemptState(getClientIdentifier(req))
+  state.count += 1
+  return state
+}
+
+function clearFailedLoginAttempts(req) {
+  loginAttempts.delete(getClientIdentifier(req))
+}
+
+function getRetryAfterSeconds(state) {
+  return Math.max(1, Math.ceil((state.resetAt - Date.now()) / 1000))
+}
+
+function requireLoginCapacity(req, res, next) {
+  const state = getLoginAttemptState(getClientIdentifier(req))
+  if (state.count < loginMaxAttempts) return next()
+
+  const retryAfter = getRetryAfterSeconds(state)
+  res.setHeader('Retry-After', retryAfter)
+  return res.status(429).json({
+    error: 'Too many login attempts. Try again later.',
+    retryAfter,
+  })
 }
 
 async function readJson(file) {
@@ -313,28 +402,35 @@ function replaceById(list, nextItem) {
 app.use(express.json({ limit: '5mb' }))
 app.use('/media', express.static(mediaDir))
 
-app.post('/api/admin/login', async (req, res) => {
+app.post('/api/admin/login', requireLoginCapacity, async (req, res) => {
   const { password } = req.body ?? {}
   if (password !== adminPassword) {
+    recordFailedLoginAttempt(req)
     return res.status(401).json({ error: 'Incorrect password.' })
   }
 
-  const token = signSession({ authenticated: true, createdAt: Date.now() })
-  res.setHeader(
-    'Set-Cookie',
-    `admin_session=${encodeURIComponent(token)}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${60 * 60 * 8}`,
-  )
+  clearFailedLoginAttempts(req)
+  const createdAt = Date.now()
+  const token = signSession({
+    authenticated: true,
+    createdAt,
+    expiresAt: createdAt + sessionMaxAgeMs,
+  })
+  res.setHeader('Set-Cookie', serializeSessionCookie(req, token, Math.floor(sessionMaxAgeMs / 1000)))
   res.json({ ok: true })
 })
 
-app.post('/api/admin/logout', (_req, res) => {
-  res.setHeader('Set-Cookie', 'admin_session=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0')
+app.post('/api/admin/logout', (req, res) => {
+  clearSessionCookie(req, res)
   res.json({ ok: true })
 })
 
 app.get('/api/admin/session', (req, res) => {
   const cookies = parseCookies(req)
   const session = verifySession(cookies.admin_session)
+  if (!session) {
+    clearSessionCookie(req, res)
+  }
   res.json({ authenticated: Boolean(session?.authenticated) })
 })
 
@@ -677,6 +773,15 @@ app.use((error, _req, res, _next) => {
 })
 
 async function start() {
+  if (isProduction) {
+    if (adminPassword === defaultAdminPassword) {
+      throw new Error('ADMIN_PASSWORD must be set to a non-default value in production.')
+    }
+    if (sessionSecret === defaultSessionSecret) {
+      throw new Error('SESSION_SECRET must be set to a non-default value in production.')
+    }
+  }
+
   await ensureDirectories()
   const publicPageRoutes = ['/', '/about.html', '/portfolio.html', '/blog.html', '/events.html', '/contact.html', '/studio.html']
 

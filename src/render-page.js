@@ -34,6 +34,7 @@ import { fetchContent } from './content-api.js'
 
 function escapeHtml(value = '') {
   return value
+    .toString()
     .replaceAll('&', '&amp;')
     .replaceAll('<', '&lt;')
     .replaceAll('>', '&gt;')
@@ -140,7 +141,7 @@ function renderHighlights(items) {
     .join('')
 }
 
-function renderPortfolioCollections(collections) {
+function renderPortfolioCollections(collections, inquiryHref) {
   return collections
     .map(
       (collection) => `
@@ -152,9 +153,26 @@ function renderPortfolioCollections(collections) {
           </div>
           <div class="gallery-grid">
             ${collection.items
-              .map(
-                (item) => `
-                  <article class="gallery-card">
+              .map((item) => {
+                const metadata = [item.medium, item.dimensions, item.year].filter(Boolean).join(' · ')
+                return `
+                  <article
+                    class="gallery-card"
+                    tabindex="0"
+                    role="button"
+                    aria-label="View details for ${escapeHtml(item.title)}"
+                    data-artwork-id="${escapeHtml(item.id || '')}"
+                    data-collection-id="${escapeHtml(collection.id || '')}"
+                    data-title="${escapeHtml(item.title || '')}"
+                    data-original-path="${escapeHtml(item.originalPath || '')}"
+                    data-thumbnail-path="${escapeHtml(item.thumbnailPath || '')}"
+                    data-alt-text="${escapeHtml(item.altText || item.title || '')}"
+                    data-caption="${escapeHtml(item.caption || '')}"
+                    data-year="${escapeHtml(item.year || '')}"
+                    data-medium="${escapeHtml(item.medium || '')}"
+                    data-dimensions="${escapeHtml(item.dimensions || '')}"
+                    data-inquiry-href="${escapeHtml(inquiryHref || '')}"
+                  >
                     ${
                       item.thumbnailPath
                         ? `<img src="${item.thumbnailPath}" alt="${escapeHtml(item.altText || item.title)}" />`
@@ -163,13 +181,12 @@ function renderPortfolioCollections(collections) {
                     <div class="gallery-copy">
                       <h4>${escapeHtml(item.title)}</h4>
                       <p>${escapeHtml(item.caption || '')}</p>
-                      <p class="gallery-meta">${escapeHtml(
-                        [item.medium, item.dimensions, item.year].filter(Boolean).join(' · '),
-                      )}</p>
+                      <p class="gallery-meta">${escapeHtml(metadata)}</p>
+                      <span class="gallery-affordance" aria-hidden="true">View details</span>
                     </div>
                   </article>
-                `,
-              )
+                `
+              })
               .join('')}
           </div>
         </section>
@@ -332,7 +349,7 @@ export async function renderPage(currentPage) {
               <h2>${escapeHtml(content.portfolio.intro.title)}</h2>
             </div>
             <p class="section-intro-copy">${escapeHtml(content.portfolio.intro.intro)}</p>
-            ${renderPortfolioCollections(content.portfolio.collections)}
+            ${renderPortfolioCollections(content.portfolio.collections, contact.emailHref)}
           </section>
         `,
       },

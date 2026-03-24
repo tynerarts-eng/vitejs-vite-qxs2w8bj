@@ -1,45 +1,187 @@
-/* Portfolio image modal styles */
-.image-modal-backdrop {
+/* Portfolio artwork viewer */
+.portfolio-viewer-open {
+  overflow: hidden;
+}
+
+.artwork-viewer-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(10, 12, 16, 0.82);
   z-index: 1000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  animation: fadeIn 0.2s;
+  display: grid;
+  align-items: stretch;
+  padding: 20px;
+  background: rgba(8, 10, 14, 0.3);
+  backdrop-filter: blur(8px);
+  opacity: 0;
+  transition: opacity 0.22s ease, background-color 0.22s ease;
 }
-.image-modal {
-  background: var(--surface-strong);
+
+.artwork-viewer-backdrop.is-visible {
+  opacity: 1;
+  background: rgba(8, 10, 14, 0.82);
+}
+
+.artwork-viewer {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(320px, 0.9fr);
+  width: min(100%, 1360px);
+  height: min(100%, 920px);
+  margin: auto;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 32px;
+  background:
+    linear-gradient(180deg, rgba(26, 30, 37, 0.92), rgba(17, 20, 26, 0.98)),
+    radial-gradient(circle at top left, rgba(197, 185, 153, 0.12), transparent 30%);
+  box-shadow: 0 32px 110px rgba(0, 0, 0, 0.5);
+  transform: translateY(18px) scale(0.985);
+  transition: transform 0.24s ease;
+}
+
+.artwork-viewer-backdrop.is-visible .artwork-viewer {
+  transform: translateY(0) scale(1);
+}
+
+.artwork-viewer-media {
+  min-width: 0;
+  min-height: 0;
+  display: grid;
+  place-items: center;
+  padding: 64px 40px 40px;
+  background:
+    radial-gradient(circle at center, rgba(255, 248, 242, 0.14), transparent 46%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(0, 0, 0, 0.08));
+}
+
+.artwork-viewer-image {
+  width: auto;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
   border-radius: 24px;
-  box-shadow: var(--shadow);
-  padding: 24px;
-  max-width: 90vw;
-  max-height: 90vh;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
+  background: rgba(255, 248, 242, 0.08);
+  box-shadow: 0 18px 60px rgba(0, 0, 0, 0.28);
 }
-.image-modal img {
-  max-width: 80vw;
-  max-height: 70vh;
-  border-radius: 16px;
-  box-shadow: 0 4px 32px rgba(0,0,0,0.18);
-  background: #fff8e1;
-  margin-top: 8px;
+
+.artwork-viewer-panel {
+  display: grid;
+  align-content: start;
+  gap: 24px;
+  padding: 84px 32px 32px;
+  border-left: 1px solid rgba(255, 255, 255, 0.08);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
+  overflow-y: auto;
 }
-.image-modal-close {
-  background: none;
-  border: none;
+
+.artwork-viewer-panel-top {
+  display: grid;
+  gap: 12px;
+}
+
+.artwork-viewer-counter,
+.artwork-viewer-story-label,
+.artwork-viewer-meta-label {
+  margin: 0;
+  font-family: 'Trebuchet MS', 'Segoe UI', sans-serif;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.artwork-viewer-counter,
+.artwork-viewer-story-label {
+  color: var(--accent-strong);
+  font-size: 0.68rem;
+}
+
+.artwork-viewer-title {
+  margin: 0;
+  max-width: none;
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
+  line-height: 0.95;
+}
+
+.artwork-viewer-meta {
+  display: grid;
+  gap: 12px;
+  padding: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.035);
+}
+
+.artwork-viewer-meta-row {
+  display: grid;
+  gap: 4px;
+}
+
+.artwork-viewer-meta-label {
+  color: var(--accent-strong);
+  font-size: 0.62rem;
+}
+
+.artwork-viewer-meta-value,
+.artwork-viewer-meta-empty,
+.artwork-viewer-story {
+  margin: 0;
+  color: var(--muted);
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.artwork-viewer-story-block {
+  display: grid;
+  gap: 10px;
+}
+
+.artwork-viewer-story-block[hidden] {
+  display: none;
+}
+
+.artwork-viewer-inquire {
+  width: 100%;
+  margin-top: auto;
+}
+
+.artwork-viewer-close,
+.artwork-viewer-nav {
+  position: absolute;
+  z-index: 2;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(15, 18, 23, 0.72);
   color: var(--heading);
-  font-size: 2rem;
-  cursor: pointer;
-  margin-bottom: 8px;
-  align-self: flex-end;
+  backdrop-filter: blur(12px);
 }
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+
+.artwork-viewer-close {
+  top: 18px;
+  right: 18px;
+  min-height: 42px;
+  padding: 0 16px;
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.artwork-viewer-nav {
+  top: 50%;
+  transform: translateY(-50%);
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.artwork-viewer-nav-prev {
+  left: 18px;
+}
+
+.artwork-viewer-nav-next {
+  right: calc(32px + min(320px, 28vw));
+}
+
+.artwork-viewer-nav[disabled] {
+  opacity: 0.35;
+  cursor: default;
 }
 :root {
   font-family: Georgia, 'Times New Roman', serif;
@@ -443,10 +585,28 @@ h3 {
 }
 
 .gallery-card {
+  position: relative;
+  display: grid;
+  grid-template-rows: auto 1fr;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 22px;
   overflow: hidden;
+  cursor: pointer;
+  transition:
+    transform 0.22s ease,
+    border-color 0.22s ease,
+    background-color 0.22s ease,
+    box-shadow 0.22s ease;
+}
+
+.gallery-card:hover,
+.gallery-card:focus-visible {
+  transform: translateY(-3px);
+  border-color: rgba(197, 185, 153, 0.45);
+  background: rgba(48, 54, 63, 0.94);
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.22);
+  outline: none;
 }
 
 .studio-gallery {
@@ -512,7 +672,14 @@ h3 {
   border: 0;
 }
 
-.gallery-card img,
+.gallery-card img {
+  width: 100%;
+  max-width: none;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  display: block;
+}
+
 .admin-thumb {
   width: 100%;
   max-width: 140px;
@@ -524,18 +691,42 @@ h3 {
 }
 
 .gallery-copy {
-  padding: 10px 6px 6px 6px;
-  font-size: 0.82rem;
-  line-height: 1.25;
+  display: grid;
+  gap: 10px;
+  padding: 16px 16px 18px;
+  font-size: 0.9rem;
+  line-height: 1.35;
 }
 
 .gallery-copy h4 {
-  margin: 0 0 6px;
-  font-size: 0.88rem;
+  margin: 0;
+  font-size: 1rem;
 }
 
 .gallery-meta {
+  margin: 0;
   font-size: 0.72rem;
+  color: var(--accent-strong);
+}
+
+.gallery-copy p {
+  margin: 0;
+}
+
+.gallery-affordance {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--heading);
+  font-family: 'Trebuchet MS', 'Segoe UI', sans-serif;
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.gallery-affordance::after {
+  content: '->';
+  font-size: 0.9rem;
 }
 
 .gallery-placeholder {
@@ -768,6 +959,36 @@ h3 {
   .admin-modal {
     width: 100%;
   }
+
+  .artwork-viewer {
+    grid-template-columns: 1fr;
+    height: min(100%, 980px);
+  }
+
+  .artwork-viewer-media {
+    min-height: 46vh;
+    padding: 76px 28px 24px;
+  }
+
+  .artwork-viewer-panel {
+    padding: 28px 24px 24px;
+    border-left: 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .artwork-viewer-nav {
+    top: auto;
+    bottom: 18px;
+    transform: none;
+  }
+
+  .artwork-viewer-nav-prev {
+    left: 18px;
+  }
+
+  .artwork-viewer-nav-next {
+    right: 18px;
+  }
 }
 
 @media (max-width: 640px) {
@@ -796,5 +1017,45 @@ h3 {
 
   .button {
     width: 100%;
+  }
+
+  .artwork-viewer-backdrop {
+    padding: 0;
+  }
+
+  .artwork-viewer {
+    width: 100%;
+    height: 100%;
+    border-radius: 0;
+    border: 0;
+  }
+
+  .artwork-viewer-media {
+    min-height: 40vh;
+    padding: 72px 18px 18px;
+  }
+
+  .artwork-viewer-image {
+    border-radius: 18px;
+  }
+
+  .artwork-viewer-panel {
+    gap: 20px;
+    padding: 22px 18px 88px;
+  }
+
+  .artwork-viewer-close {
+    top: 12px;
+    right: 12px;
+  }
+
+  .artwork-viewer-nav {
+    width: 46px;
+    height: 46px;
+    bottom: 12px;
+  }
+
+  .gallery-copy {
+    padding: 14px 14px 16px;
   }
 }

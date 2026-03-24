@@ -15,6 +15,7 @@ function readArtworkFromCard(card) {
     year: dataset.year || '',
     medium: dataset.medium || '',
     dimensions: dataset.dimensions || '',
+    story: dataset.story || '',
     price: dataset.price || '',
     inquiryHref: dataset.inquiryHref || '',
   }
@@ -128,8 +129,10 @@ export function enablePortfolioImageModal() {
       })
     }
 
-    if (artwork.caption) {
-      story.textContent = artwork.caption
+    const storyText = artwork.story || artwork.caption
+
+    if (storyText) {
+      story.textContent = storyText
       storyBlock.hidden = false
     } else {
       story.textContent = ''

@@ -196,8 +196,74 @@ function normalizeStudioContent(studio = {}) {
   }
 }
 
+function sanitizeText(value, maxLength = 5000) {
+  if (typeof value !== 'string') return ''
+  return value.trim().slice(0, maxLength)
+}
+
+function sanitizeEmail(value) {
+  const email = sanitizeText(value, 320)
+  if (!email) return ''
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) ? email : ''
+}
+
+function normalizePortfolioItem(item = {}, defaults = {}) {
+  const fallbackSortOrder = defaults.sortOrder ?? 0
+
+  return {
+    id: sanitizeText(item.id, 120) || defaults.id || createId('art'),
+    collectionId: sanitizeText(item.collectionId, 120) || defaults.collectionId || '',
+    title: sanitizeText(item.title, 200) || defaults.title || 'Untitled piece',
+    originalPath: sanitizeText(item.originalPath, 1000) || defaults.originalPath || '',
+    thumbnailPath: sanitizeText(item.thumbnailPath, 1000) || defaults.thumbnailPath || '',
+    altText: sanitizeText(item.altText, 500) || defaults.altText || '',
+    caption: sanitizeText(item.caption, 2000) || defaults.caption || '',
+    story: sanitizeText(item.story, 8000) || defaults.story || '',
+    price: sanitizeText(item.price, 120) || defaults.price || '',
+    availability: sanitizeText(item.availability, 120) || defaults.availability || '',
+    inquiryEmail: sanitizeEmail(item.inquiryEmail) || defaults.inquiryEmail || '',
+    year: sanitizeText(item.year, 50) || defaults.year || '',
+    medium: sanitizeText(item.medium, 200) || defaults.medium || '',
+    dimensions: sanitizeText(item.dimensions, 200) || defaults.dimensions || '',
+    status: sanitizeText(item.status, 50) || defaults.status || 'published',
+    sortOrder: Number.isFinite(Number(item.sortOrder))
+      ? Number(item.sortOrder)
+      : Number.isFinite(Number(defaults.sortOrder))
+        ? Number(defaults.sortOrder)
+        : fallbackSortOrder,
+  }
+}
+
+function normalizePortfolioContent(portfolio = {}) {
+  const intro = portfolio.intro || {}
+  const collections = Array.isArray(portfolio.collections) ? portfolio.collections : []
+
+  return {
+    ...portfolio,
+    intro: {
+      eyebrow: intro.eyebrow || '',
+      title: intro.title || '',
+      intro: intro.intro || '',
+    },
+    collections: collections.map((collection) => ({
+      ...collection,
+      items: Array.isArray(collection.items)
+        ? collection.items.map((item, index) =>
+            normalizePortfolioItem(item, {
+              id: item?.id,
+              collectionId: collection.id,
+              title: item?.title || 'Untitled piece',
+              sortOrder: (index + 1) * 10,
+            }),
+          )
+        : [],
+    })),
+  }
+}
+
 function buildPublicPayload(content) {
-  const portfolioCollections = sortByOrder(content.portfolio.collections, (a, b) => a.title.localeCompare(b.title)).map(
+  const normalizedPortfolio = normalizePortfolioContent(content.portfolio)
+  const portfolioCollections = sortByOrder(normalizedPortfolio.collections, (a, b) => a.title.localeCompare(b.title)).map(
     (collection) => ({
       ...collection,
       items: sortByOrder(collection.items || [], (a, b) => a.title.localeCompare(b.title)).filter(
@@ -220,7 +286,7 @@ function buildPublicPayload(content) {
 
   return {
     ...content,
-    portfolio: { ...content.portfolio, collections: portfolioCollections },
+    portfolio: { ...normalizedPortfolio, collections: portfolioCollections },
     blog: { ...content.blog, posts: publishedPosts },
     events: {
       ...content.events,
@@ -453,20 +519,12 @@ app.post('/api/admin/portfolio/items', requireAuth, async (req, res, next) => {
     const collection = current.portfolio.collections.find((entry) => entry.id === req.body.collectionId)
     if (!collection) return res.status(404).json({ error: 'Collection not found.' })
 
-    const item = {
+    const item = normalizePortfolioItem(req.body, {
       id: req.body.id || createId('art'),
       collectionId: collection.id,
       title: req.body.title || 'Untitled piece',
-      originalPath: req.body.originalPath || '',
-      thumbnailPath: req.body.thumbnailPath || '',
-      altText: req.body.altText || '',
-      caption: req.body.caption || '',
-      year: req.body.year || '',
-      medium: req.body.medium || '',
-      dimensions: req.body.dimensions || '',
-      status: req.body.status || 'published',
-      sortOrder: Number(req.body.sortOrder || collection.items.length * 10 + 10),
-    }
+      sortOrder: collection.items.length * 10 + 10,
+    })
     collection.items.push(item)
     await writeContent(current)
     res.status(201).json(item)
@@ -482,7 +540,7 @@ app.put('/api/admin/portfolio/items/:id', requireAuth, async (req, res, next) =>
     current.portfolio.collections = current.portfolio.collections.map((collection) => {
       const found = collection.items.find((item) => item.id === req.params.id)
       if (!found) return collection
-      updated = { ...found, ...req.body }
+      updated = normalizePortfolioItem({ ...found, ...req.body }, { ...found, collectionId: collection.id, id: found.id })
       return { ...collection, items: replaceById(collection.items, updated) }
     })
 
@@ -537,14 +595,14 @@ app.post('/api/admin/portfolio/upload', requireAuth, upload.array('images', 20),
         originalPath: `/media/originals/${path.basename(originalFile)}`,
         thumbnailPath: `/media/thumbnails/${path.basename(thumbFile)}`,
         altText: path.basename(file.originalname, extension),
-        caption: '',
-        year: '',
-        medium: '',
-        dimensions: '',
-        status: 'published',
         sortOrder: collection.items.length * 10 + createdItems.length * 10 + 10,
       }
-      createdItems.push(item)
+      createdItems.push(
+        normalizePortfolioItem(item, {
+          ...item,
+          status: 'published',
+        }),
+      )
     }
 
     collection.items.push(...createdItems)

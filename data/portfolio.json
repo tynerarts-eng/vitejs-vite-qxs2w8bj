@@ -24,7 +24,11 @@
           "medium": "",
           "dimensions": "",
           "status": "published",
-          "sortOrder": 30
+          "sortOrder": 30,
+          "story": "",
+          "price": "",
+          "availability": "",
+          "inquiryEmail": ""
         },
         {
           "id": "art-7ad2d8d7",
@@ -38,7 +42,11 @@
           "medium": "Digital AI",
           "dimensions": "12x12",
           "status": "published",
-          "sortOrder": 60
+          "sortOrder": 60,
+          "story": "",
+          "price": "",
+          "availability": "",
+          "inquiryEmail": ""
         },
         {
           "id": "art-1d83efe4",
@@ -52,7 +60,11 @@
           "medium": "AI ",
           "dimensions": "",
           "status": "published",
-          "sortOrder": 50
+          "sortOrder": 50,
+          "story": "",
+          "price": "",
+          "availability": "",
+          "inquiryEmail": ""
         },
         {
           "id": "art-3a2b2d3e",
@@ -66,7 +78,11 @@
           "medium": "",
           "dimensions": "",
           "status": "published",
-          "sortOrder": 50
+          "sortOrder": 50,
+          "story": "",
+          "price": "",
+          "availability": "",
+          "inquiryEmail": ""
         },
         {
           "id": "art-5e875710",
@@ -80,7 +96,11 @@
           "medium": "",
           "dimensions": "",
           "status": "published",
-          "sortOrder": 50
+          "sortOrder": 50,
+          "story": "",
+          "price": "",
+          "availability": "",
+          "inquiryEmail": ""
         },
         {
           "id": "art-30020c1f",
@@ -94,7 +114,11 @@
           "medium": "",
           "dimensions": "",
           "status": "published",
-          "sortOrder": 60
+          "sortOrder": 60,
+          "story": "",
+          "price": "",
+          "availability": "",
+          "inquiryEmail": ""
         },
         {
           "id": "art-2b7a355e",
@@ -108,7 +132,11 @@
           "medium": "",
           "dimensions": "",
           "status": "published",
-          "sortOrder": 70
+          "sortOrder": 70,
+          "story": "",
+          "price": "",
+          "availability": "",
+          "inquiryEmail": ""
         },
         {
           "id": "art-41b9f675",
@@ -122,7 +150,11 @@
           "medium": "",
           "dimensions": "",
           "status": "published",
-          "sortOrder": 80
+          "sortOrder": 80,
+          "story": "",
+          "price": "",
+          "availability": "",
+          "inquiryEmail": ""
         }
       ]
     },
@@ -145,7 +177,11 @@
           "medium": "",
           "dimensions": "",
           "status": "published",
-          "sortOrder": 10
+          "sortOrder": 10,
+          "story": "",
+          "price": "",
+          "availability": "",
+          "inquiryEmail": ""
         }
       ]
     }

@@ -141,6 +141,15 @@ function renderHighlights(items) {
     .join('')
 }
 
+function getArtworkInquiryHref(item, defaultInquiryHref) {
+  const inquiryEmail = (item.inquiryEmail || '').trim()
+  if (inquiryEmail) {
+    return inquiryEmail.startsWith('mailto:') ? inquiryEmail : `mailto:${inquiryEmail}`
+  }
+
+  return defaultInquiryHref || ''
+}
+
 function renderPortfolioCollections(collections, inquiryHref) {
   return collections
     .map(
@@ -171,7 +180,8 @@ function renderPortfolioCollections(collections, inquiryHref) {
                     data-year="${escapeHtml(item.year || '')}"
                     data-medium="${escapeHtml(item.medium || '')}"
                     data-dimensions="${escapeHtml(item.dimensions || '')}"
-                    data-inquiry-href="${escapeHtml(inquiryHref || '')}"
+                    data-price="${escapeHtml(item.price || '')}"
+                    data-inquiry-href="${escapeHtml(getArtworkInquiryHref(item, inquiryHref))}"
                   >
                     ${
                       item.thumbnailPath

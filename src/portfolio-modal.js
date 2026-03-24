@@ -15,8 +15,32 @@ function readArtworkFromCard(card) {
     year: dataset.year || '',
     medium: dataset.medium || '',
     dimensions: dataset.dimensions || '',
+    price: dataset.price || '',
     inquiryHref: dataset.inquiryHref || '',
   }
+}
+
+function buildInquiryHref(artwork) {
+  const rawTarget = (artwork.inquiryHref || 'mailto:').trim()
+  const baseTarget = rawTarget.startsWith('mailto:') ? rawTarget : `mailto:${rawTarget}`
+  const [recipientPart = 'mailto:', existingQuery = ''] = baseTarget.split('?')
+  const params = new URLSearchParams(existingQuery)
+  const title = artwork.title || 'this artwork'
+
+  params.set('subject', `Inquiry about ${title}`)
+
+  const bodyLines = [
+    'Hello,',
+    '',
+    `I am interested in "${title}".`,
+    artwork.price ? `I saw the listed price of ${artwork.price}.` : 'Could you share availability and next steps?',
+    '',
+    'Thank you,',
+  ]
+
+  params.set('body', bodyLines.join('\n'))
+
+  return `${recipientPart}?${params.toString()}`
 }
 
 export function enablePortfolioImageModal() {
@@ -112,7 +136,7 @@ export function enablePortfolioImageModal() {
     image.alt = artwork.altText || artwork.title
 
     counter.textContent = `${currentIndex + 1} / ${artworks.length}`
-    inquire.href = artwork.inquiryHref || 'mailto:'
+    inquire.href = buildInquiryHref(artwork)
     inquire.setAttribute('aria-label', `Inquire about ${artwork.title}`)
 
     prevButton.disabled = currentIndex === 0

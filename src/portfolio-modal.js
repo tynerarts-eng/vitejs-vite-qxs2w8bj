@@ -38,9 +38,13 @@ function buildInquiryHref(artwork) {
     'Thank you,',
   ]
 
-  params.set('body', bodyLines.join('\n'))
+  // Fix: encode body with encodeURIComponent so spaces are %20, not +
+  const body = encodeURIComponent(bodyLines.join('\n'))
+  params.set('body', body)
 
-  return `${recipientPart}?${params.toString()}`
+  // Replace the body param in the query string to avoid double encoding
+  const query = params.toString().replace(/body=[^&]*/, `body=${body}`)
+  return `${recipientPart}?${query}`
 }
 
 export function enablePortfolioImageModal() {

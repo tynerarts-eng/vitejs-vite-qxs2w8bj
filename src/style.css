@@ -803,6 +803,7 @@ h3 {
 }
 
 .admin-form input,
+.admin-form select,
 .admin-form textarea {
   width: 100%;
   font: inherit;
@@ -890,6 +891,69 @@ h3 {
 .admin-thumb-title {
   font-size: 0.95rem;
   line-height: 1.2;
+}
+
+.admin-thumb-meta {
+  font-size: 0.76rem;
+  color: var(--muted);
+  text-transform: capitalize;
+}
+
+.admin-thumb-card-shell {
+  display: grid;
+  gap: 10px;
+}
+
+.admin-thumb-actions {
+  justify-content: flex-start;
+}
+
+.collectionUploadZone {
+  display: grid;
+  gap: 10px;
+  padding: 18px;
+  border: 1px dashed rgba(197, 185, 153, 0.45);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.05);
+  cursor: pointer;
+  transition: border-color 0.2s ease, background-color 0.2s ease, transform 0.2s ease;
+}
+
+.collectionUploadZone:hover,
+.collectionUploadZone:focus-visible,
+.collectionUploadZone.is-dragging {
+  border-color: var(--accent-strong);
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateY(-1px);
+  outline: none;
+}
+
+.collectionUploadTitle,
+.collectionUploadCopy,
+.admin-upload-note {
+  margin: 0;
+}
+
+.collectionUploadTitle {
+  font-size: 1rem;
+  color: var(--heading);
+}
+
+.collectionUploadCopy {
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
+.admin-upload-note {
+  font-size: 0.9rem;
+}
+
+.admin-upload-note.is-success {
+  color: #d7efcd;
+}
+
+.admin-upload-note.is-error {
+  color: #ffb6aa;
 }
 
 .admin-modal-backdrop {

@@ -207,6 +207,15 @@ function sanitizeEmail(value) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) ? email : ''
 }
 
+const portfolioItemStatuses = new Set(['draft', 'published', 'archived'])
+const portfolioItemAvailability = new Set(['available', 'on hold', 'sold', 'not for sale'])
+
+function sanitizeAllowedValue(value, allowedValues, fallback = '') {
+  const normalized = sanitizeText(value, 120).toLowerCase()
+  if (!normalized) return fallback
+  return allowedValues.has(normalized) ? normalized : fallback
+}
+
 function normalizePortfolioItem(item = {}, defaults = {}) {
   const fallbackSortOrder = defaults.sortOrder ?? 0
 
@@ -220,12 +229,12 @@ function normalizePortfolioItem(item = {}, defaults = {}) {
     caption: sanitizeText(item.caption, 2000) || defaults.caption || '',
     story: sanitizeText(item.story, 8000) || defaults.story || '',
     price: sanitizeText(item.price, 120) || defaults.price || '',
-    availability: sanitizeText(item.availability, 120) || defaults.availability || '',
+    availability: sanitizeAllowedValue(item.availability, portfolioItemAvailability, defaults.availability || ''),
     inquiryEmail: sanitizeEmail(item.inquiryEmail) || defaults.inquiryEmail || '',
     year: sanitizeText(item.year, 50) || defaults.year || '',
     medium: sanitizeText(item.medium, 200) || defaults.medium || '',
     dimensions: sanitizeText(item.dimensions, 200) || defaults.dimensions || '',
-    status: sanitizeText(item.status, 50) || defaults.status || 'published',
+    status: sanitizeAllowedValue(item.status, portfolioItemStatuses, defaults.status || 'published'),
     sortOrder: Number.isFinite(Number(item.sortOrder))
       ? Number(item.sortOrder)
       : Number.isFinite(Number(defaults.sortOrder))
@@ -616,8 +625,16 @@ app.post('/api/admin/portfolio/upload', requireAuth, upload.array('images', 20),
 app.post('/api/admin/reorder', requireAuth, async (req, res, next) => {
   try {
     const current = await readContent()
-    const { type, ids } = req.body ?? {}
+    const { type, ids, collectionId } = req.body ?? {}
+    if (!Array.isArray(ids)) {
+      return res.status(400).json({ error: 'ids must be an array.' })
+    }
     const orderMap = new Map((ids || []).map((id, index) => [id, (index + 1) * 10]))
+    const allowedTypes = new Set(['blog', 'events', 'collections', 'items'])
+
+    if (!allowedTypes.has(type)) {
+      return res.status(400).json({ error: 'Invalid reorder type.' })
+    }
 
     if (type === 'blog') {
       current.blog.posts = current.blog.posts.map((post) => ({ ...post, sortOrder: orderMap.get(post.id) ?? post.sortOrder }))
@@ -640,7 +657,10 @@ app.post('/api/admin/reorder', requireAuth, async (req, res, next) => {
     if (type === 'items') {
       current.portfolio.collections = current.portfolio.collections.map((collection) => ({
         ...collection,
-        items: collection.items.map((item) => ({ ...item, sortOrder: orderMap.get(item.id) ?? item.sortOrder })),
+        items:
+          collectionId && collection.id !== collectionId
+            ? collection.items
+            : collection.items.map((item) => ({ ...item, sortOrder: orderMap.get(item.id) ?? item.sortOrder })),
       }))
     }
 

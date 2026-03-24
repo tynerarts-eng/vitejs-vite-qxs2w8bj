@@ -176,7 +176,7 @@
 }
 
 .artwork-viewer-nav-next {
-  right: calc(32px + min(320px, 28vw));
+  right: calc(32px + min(480px, 28vw));
 }
 
 .artwork-viewer-nav[disabled] {

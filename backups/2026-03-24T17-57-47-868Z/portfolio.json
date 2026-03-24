@@ -155,24 +155,6 @@
           "price": "",
           "availability": "",
           "inquiryEmail": ""
-        },
-        {
-          "id": "art-60832918",
-          "collectionId": "featured-work",
-          "title": "Black Bridge",
-          "originalPath": "/media/originals/1774375067229-black-bridge.jpg",
-          "thumbnailPath": "/media/thumbnails/1774375067229-black-bridge.jpg",
-          "altText": "Black Bridge",
-          "caption": "",
-          "story": "",
-          "price": "",
-          "availability": "",
-          "inquiryEmail": "",
-          "year": "",
-          "medium": "",
-          "dimensions": "",
-          "status": "published",
-          "sortOrder": 90
         }
       ]
     },

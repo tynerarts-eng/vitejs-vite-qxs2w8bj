@@ -449,6 +449,69 @@ h3 {
   overflow: hidden;
 }
 
+.studio-gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+  margin: 28px 0 32px;
+}
+
+.studio-gallery-item,
+.studio-location {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 22px;
+  overflow: hidden;
+}
+
+.studio-gallery-item img {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+}
+
+.studio-gallery-item figcaption {
+  margin: 0;
+  padding: 16px 18px 18px;
+  color: var(--muted);
+}
+
+.studio-info {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  margin-bottom: 28px;
+}
+
+.studio-location {
+  width: min(100%, 960px);
+  justify-self: center;
+  padding: 24px;
+}
+
+.studio-location h3 {
+  margin-bottom: 16px;
+}
+
+.studio-location p {
+  margin: 0 0 10px;
+  color: var(--muted);
+}
+
+.studio-map-frame {
+  margin-top: 20px;
+  border-radius: 18px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.studio-map-frame iframe {
+  display: block;
+  width: 100%;
+  min-height: 360px;
+  border: 0;
+}
+
 .gallery-card img,
 .admin-thumb {
   width: 100%;
@@ -563,6 +626,23 @@ h3 {
   resize: vertical;
 }
 
+.admin-form-split {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.admin-code-area {
+  min-height: 260px;
+  font-family: Consolas, 'Courier New', monospace;
+  font-size: 0.92rem;
+}
+
+.admin-help {
+  margin: -4px 0 0;
+  color: var(--muted);
+}
+
 .admin-header-row,
 .admin-inline-actions,
 .editor-toolbar {
@@ -666,10 +746,12 @@ h3 {
   .card-grid,
   .blog-list,
   .gallery-grid,
+  .studio-gallery,
   .contact-panel,
   .event,
   .event-columns,
-  .admin-shell {
+  .admin-shell,
+  .admin-form-split {
     grid-template-columns: 1fr;
   }
 

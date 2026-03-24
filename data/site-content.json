@@ -27,6 +27,11 @@
       "href": "/events.html"
     },
     {
+      "key": "studio",
+      "label": "Studio",
+      "href": "/studio.html"
+    },
+    {
       "key": "contact",
       "label": "Contact",
       "href": "/contact.html"
@@ -73,6 +78,13 @@
         "text": "Use the Events page for community updates, shows, talks, markets, and future appearances.",
         "href": "/events.html",
         "linkLabel": "Open Events"
+      },
+      {
+        "eyebrow": "Studio",
+        "title": "Behind the scenes",
+        "text": "Get a look at the creative process, workspace, and tools used in making the work.",
+        "href": "/studio.html",
+        "linkLabel": "Open Studio"
       }
     ],
     "futureEyebrow": "Future option",

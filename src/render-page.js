@@ -1,7 +1,8 @@
 // Render a gallery for the studio page
 function renderStudioGallery(images) {
-  if (!images || images.length === 0) return ''
-  return images
+  const items = Array.isArray(images) ? images : images ? [images] : []
+  if (items.length === 0) return ''
+  return items
     .map(
       (image) => `
         <figure class="studio-gallery-item">
@@ -11,6 +12,21 @@ function renderStudioGallery(images) {
       `,
     )
     .join('')
+}
+
+function renderMapEmbed(src) {
+  if (!src) return ''
+  return `
+    <div class="studio-map-frame">
+      <iframe
+        src="${escapeHtml(src)}"
+        loading="lazy"
+        allowfullscreen=""
+        referrerpolicy="no-referrer-when-downgrade"
+        title="Studio location map"
+      ></iframe>
+    </div>
+  `
 }
 import './style.css'
 import heroImg from './assets/hero.png'
@@ -111,7 +127,8 @@ function renderHomeCards(items) {
 }
 
 function renderHighlights(items) {
-  return items
+  const entries = Array.isArray(items) ? items : items ? [items] : []
+  return entries
     .map(
       (item) => `
         <article class="highlight">
@@ -357,16 +374,18 @@ export async function renderPage(currentPage) {
         `,
       },
       studio: {
-        hero: content.studio,
+        hero: content.studio.intro,
         body: `
           <section class="section">
             <div class="section-heading">
-              <p class="eyebrow">${escapeHtml(content.studio.eyebrow)}</p>
-              <h2>${escapeHtml(content.studio.title)}</h2>
+              <p class="eyebrow">${escapeHtml(content.studio.intro.eyebrow)}</p>
+              <h2>${escapeHtml(content.studio.intro.title)}</h2>
             </div>
-            <p class="section-intro-copy">${escapeHtml(content.studio.body)}</p>
+            <p class="section-intro-copy">${escapeHtml(content.studio.intro.body)}</p>
             ${
-              content.studio.studioImages && content.studio.studioImages.length > 0
+              (Array.isArray(content.studio.studioImages)
+                ? content.studio.studioImages.length > 0
+                : Boolean(content.studio.studioImages))
                 ? `
               <div class="studio-gallery">
                 ${renderStudioGallery(content.studio.studioImages)}
@@ -386,6 +405,7 @@ export async function renderPage(currentPage) {
                     ? `<a class="button button-primary" href="${content.studio.location.mapUrl}" target="_blank" rel="noopener noreferrer">View on Map</a>`
                     : ''
                 }
+                ${renderMapEmbed(content.studio.location.mapEmbedSrc)}
               </div>
             </div>
             <div class="highlights">

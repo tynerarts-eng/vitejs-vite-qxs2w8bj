@@ -29,6 +29,7 @@ const dataFiles = {
   portfolio: path.join(dataDir, 'portfolio.json'),
   blog: path.join(dataDir, 'blog.json'),
   events: path.join(dataDir, 'events.json'),
+  studio: path.join(dataDir, 'studio.json'),
 }
 
 async function ensureDirectories() {
@@ -104,21 +105,24 @@ async function readJson(file) {
 }
 
 async function readContent() {
-  const [site, portfolio, blog, events] = await Promise.all([
+  const [site, portfolio, blog, events, studio] = await Promise.all([
     readJson(dataFiles.site),
     readJson(dataFiles.portfolio),
     readJson(dataFiles.blog),
     readJson(dataFiles.events),
+    readJson(dataFiles.studio),
   ])
-  return { site, portfolio, blog, events }
+  return { site, portfolio, blog, events, studio }
 }
 
-async function createBackup() {
+async function createBackup(keys) {
+  if (!keys.length) return null
   const stamp = new Date().toISOString().replace(/[:.]/g, '-')
   const snapshotDir = path.join(backupsDir, stamp)
   await fs.mkdir(snapshotDir, { recursive: true })
   await Promise.all(
-    Object.entries(dataFiles).map(async ([name, file]) => {
+    keys.map(async (name) => {
+      const file = dataFiles[name]
       await fs.copyFile(file, path.join(snapshotDir, `${name}.json`))
     }),
   )
@@ -126,9 +130,18 @@ async function createBackup() {
 }
 
 async function writeContent(nextContent) {
-  await createBackup()
+  const currentContent = await readContent()
+  const changedEntries = Object.entries(nextContent).filter(([key, value]) => {
+    const currentSerialized = JSON.stringify(currentContent[key])
+    const nextSerialized = JSON.stringify(value)
+    return currentSerialized !== nextSerialized
+  })
+
+  if (changedEntries.length === 0) return
+
+  await createBackup(changedEntries.map(([key]) => key))
   await Promise.all(
-    Object.entries(nextContent).map(async ([key, value]) => {
+    changedEntries.map(async ([key, value]) => {
       const file = dataFiles[key]
       await fs.writeFile(file, `${JSON.stringify(value, null, 2)}\n`, 'utf8')
     }),
@@ -141,6 +154,46 @@ function sortByOrder(list, fallback) {
     if (orderDelta !== 0) return orderDelta
     return fallback(a, b)
   })
+}
+
+function normalizeStudioContent(studio = {}) {
+  const intro = studio.intro || {}
+  const location = studio.location || {}
+  const highlights = Array.isArray(studio.highlights)
+    ? studio.highlights
+    : studio.highlights
+      ? [studio.highlights]
+      : []
+  const studioImages = Array.isArray(studio.studioImages)
+    ? studio.studioImages
+    : studio.studioImages
+      ? [studio.studioImages]
+      : []
+
+  return {
+    intro: {
+      eyebrow: intro.eyebrow || '',
+      title: intro.title || '',
+      body: intro.body || '',
+    },
+    location: {
+      address: location.address || '',
+      city: location.city || '',
+      direction: location.direction || '',
+      hours: location.hours || '',
+      mapUrl: location.mapUrl || location.mapurl || '',
+      mapEmbedSrc: location.mapEmbedSrc || '',
+    },
+    highlights: highlights.map((item) => ({
+      title: item?.title || '',
+      text: item?.text || '',
+    })),
+    studioImages: studioImages.map((image) => ({
+      path: image?.path || '',
+      alt: image?.alt || '',
+      caption: image?.caption || '',
+    })),
+  }
 }
 
 function buildPublicPayload(content) {
@@ -174,6 +227,7 @@ function buildPublicPayload(content) {
       upcoming: normalizedEvents.filter((event) => event.status !== 'past'),
       past: normalizedEvents.filter((event) => event.status === 'past'),
     },
+    studio: normalizeStudioContent(content.studio),
   }
 }
 
@@ -220,7 +274,11 @@ app.get('/api/public/content', async (_req, res, next) => {
 
 app.get('/api/admin/content', requireAuth, async (_req, res, next) => {
   try {
-    res.json(await readContent())
+    const content = await readContent()
+    res.json({
+      ...content,
+      studio: normalizeStudioContent(content.studio),
+    })
   } catch (error) {
     next(error)
   }
@@ -232,6 +290,18 @@ app.put('/api/admin/site', requireAuth, async (req, res, next) => {
     const nextContent = { ...current, site: req.body }
     await writeContent(nextContent)
     res.json(nextContent.site)
+  } catch (error) {
+    next(error)
+  }
+})
+
+app.put('/api/admin/studio', requireAuth, async (req, res, next) => {
+  try {
+    const current = await readContent()
+    const studio = normalizeStudioContent(req.body)
+    const nextContent = { ...current, studio }
+    await writeContent(nextContent)
+    res.json(studio)
   } catch (error) {
     next(error)
   }
@@ -530,7 +600,7 @@ app.use((error, _req, res, _next) => {
 
 async function start() {
   await ensureDirectories()
-  const publicPageRoutes = ['/', '/about.html', '/portfolio.html', '/blog.html', '/events.html', '/contact.html']
+  const publicPageRoutes = ['/', '/about.html', '/portfolio.html', '/blog.html', '/events.html', '/contact.html', '/studio.html']
 
   if (isProduction) {
     app.use(express.static(path.join(__dirname, 'dist')))

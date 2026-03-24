@@ -25,7 +25,7 @@ function layout(content) {
         <p class="eyebrow">Studio admin</p>
         <h1>Manage the site</h1>
         <div class="admin-nav">
-          ${['site', 'portfolio', 'blog', 'events'].map((tab) => `<button data-tab="${tab}" class="${tab === state.activeTab ? 'is-active' : ''}">${tab}</button>`).join('')}
+          ${['site', 'studio', 'portfolio', 'blog', 'events'].map((tab) => `<button data-tab="${tab}" class="${tab === state.activeTab ? 'is-active' : ''}">${tab}</button>`).join('')}
         </div>
         <button id="logoutButton" class="button button-secondary">Log out</button>
       </aside>
@@ -75,6 +75,46 @@ function siteTab(site) {
         <label>Contact email label<input name="emailLabel" value="${escapeHtml(site.contact.emailLabel)}" /></label>
         <label>Contact email href<input name="emailHref" value="${escapeHtml(site.contact.emailHref)}" /></label>
         <button class="button button-primary" type="submit">Save site content</button>
+      </form>
+    </section>
+  `
+}
+
+function studioTab(studio) {
+  const images = Array.isArray(studio.studioImages) ? studio.studioImages : []
+  const highlights = Array.isArray(studio.highlights) ? studio.highlights : []
+  const primaryHighlight = highlights[0] || { title: '', text: '' }
+
+  return `
+    <section class="admin-card">
+      <h2>Studio page</h2>
+      <form id="studioForm" class="admin-form">
+        <div class="admin-form-split">
+          <label>Eyebrow<input name="introEyebrow" value="${escapeHtml(studio.intro?.eyebrow || '')}" /></label>
+          <label>Page title<input name="introTitle" value="${escapeHtml(studio.intro?.title || '')}" /></label>
+        </div>
+        <label>Intro body<textarea name="introBody">${escapeHtml(studio.intro?.body || '')}</textarea></label>
+        <div class="admin-form-split">
+          <label>Address<input name="address" value="${escapeHtml(studio.location?.address || '')}" /></label>
+          <label>City<input name="city" value="${escapeHtml(studio.location?.city || '')}" /></label>
+        </div>
+        <div class="admin-form-split">
+          <label>Direction<input name="direction" value="${escapeHtml(studio.location?.direction || '')}" /></label>
+          <label>Hours<input name="hours" value="${escapeHtml(studio.location?.hours || '')}" /></label>
+        </div>
+        <label>Map link URL<input name="mapUrl" value="${escapeHtml(studio.location?.mapUrl || '')}" /></label>
+        <label>Google Maps embed src
+          <textarea name="mapEmbedSrc" placeholder="Paste the src value from Google Maps embed HTML">${escapeHtml(studio.location?.mapEmbedSrc || '')}</textarea>
+        </label>
+        <div class="admin-form-split">
+          <label>Highlight title<input name="highlightTitle" value="${escapeHtml(primaryHighlight.title || '')}" /></label>
+          <label>Highlight text<textarea name="highlightText">${escapeHtml(primaryHighlight.text || '')}</textarea></label>
+        </div>
+        <label>Studio images JSON
+          <textarea name="studioImages" class="admin-code-area">${escapeHtml(JSON.stringify(images, null, 2))}</textarea>
+        </label>
+        <p class="admin-help">Use an array of objects with path, alt, and caption keys.</p>
+        <button class="button button-primary" type="submit">Save studio content</button>
       </form>
     </section>
   `
@@ -287,6 +327,7 @@ function renderAdmin() {
   const content = state.content
   const tabMarkup = {
     site: siteTab(content.site),
+    studio: studioTab(content.studio),
     portfolio: portfolioTab(content.portfolio),
     blog: blogTab(content.blog),
     events: eventsTab(content.events),
@@ -332,6 +373,43 @@ function bindAdminEvents() {
     nextSite.contact.emailLabel = values.emailLabel
     nextSite.contact.emailHref = values.emailHref
     await sendJson('/api/admin/site', 'PUT', nextSite)
+    await refresh()
+  })
+
+  document.querySelector('#studioForm')?.addEventListener('submit', async (event) => {
+    event.preventDefault()
+    const values = formToObject(event.currentTarget)
+    let studioImages = []
+
+    try {
+      const parsed = JSON.parse(values.studioImages || '[]')
+      studioImages = Array.isArray(parsed) ? parsed : []
+    } catch {
+      window.alert('Studio images JSON must be a valid array.')
+      return
+    }
+
+    const nextStudio = {
+      intro: {
+        eyebrow: values.introEyebrow,
+        title: values.introTitle,
+        body: values.introBody,
+      },
+      location: {
+        address: values.address,
+        city: values.city,
+        direction: values.direction,
+        hours: values.hours,
+        mapUrl: values.mapUrl,
+        mapEmbedSrc: values.mapEmbedSrc,
+      },
+      highlights: values.highlightTitle || values.highlightText
+        ? [{ title: values.highlightTitle, text: values.highlightText }]
+        : [],
+      studioImages,
+    }
+
+    await sendJson('/api/admin/studio', 'PUT', nextStudio)
     await refresh()
   })
 

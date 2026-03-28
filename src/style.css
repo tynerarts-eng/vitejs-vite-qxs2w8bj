@@ -12,7 +12,7 @@
   display: grid;
   align-items: stretch;
   padding: 20px;
-  background: rgba(8, 10, 14, 0.3);
+  background: rgba(7, 8, 10, 0.3);
   backdrop-filter: blur(8px);
   opacity: 0;
   transition: opacity 0.22s ease, background-color 0.22s ease;
@@ -20,7 +20,7 @@
 
 .artwork-viewer-backdrop.is-visible {
   opacity: 1;
-  background: rgba(8, 10, 14, 0.82);
+  background: rgba(0, 0, 0, 0.82);
 }
 
 .artwork-viewer {
@@ -62,7 +62,7 @@
   max-height: 100%;
   object-fit: contain;
   border-radius: 24px;
-  background: rgba(255, 248, 242, 0.08);
+  background: rgba(255, 248, 242, 0.678);
   box-shadow: 0 18px 60px rgba(0, 0, 0, 0.28);
 }
 
@@ -72,7 +72,7 @@
   gap: 24px;
   padding: 84px 32px 32px;
   border-left: 1px solid rgba(255, 255, 255, 0.08);
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.603), rgba(255, 255, 255, 0.02));
   overflow-y: auto;
 }
 
@@ -150,7 +150,7 @@
   position: absolute;
   z-index: 2;
   border: 1px solid rgba(255, 255, 255, 0.14);
-  background: rgba(15, 18, 23, 0.72);
+  background: rgba(128, 134, 145, 0.842);
   color: var(--heading);
   backdrop-filter: blur(12px);
 }
@@ -321,6 +321,13 @@ a.button {
 }
 
 .hero-home .hero-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(280px, 0.9fr);
+  gap: 32px;
+  align-items: end;
+}
+
+.hero-home .hero-panel {
   display: grid;
   grid-template-columns: minmax(0, 1.25fr) minmax(280px, 0.9fr);
   gap: 32px;

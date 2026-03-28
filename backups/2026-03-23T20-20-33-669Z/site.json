@@ -27,11 +27,6 @@
       "href": "/events.html"
     },
     {
-      "key": "studio",
-      "label": "Studio",
-      "href": "/studio.html"
-    },
-    {
       "key": "contact",
       "label": "Contact",
       "href": "/contact.html"
@@ -40,7 +35,7 @@
   "home": {
     "eyebrow": "Art, ideas, and local presence",
     "title": "A personal site for artwork, writing, and whatever interesting thing comes next.",
-    "lede": "wow WOW",
+    "lede": "This is designed to feel welcoming rather than salesy. It can introduce your dad, show selected work, share thoughts and updates, and leave room for a future shop if that becomes useful.",
     "primaryCtaLabel": "See the work",
     "primaryCtaHref": "/portfolio.html",
     "secondaryCtaLabel": "Read the blog",
@@ -51,13 +46,6 @@
     "overviewTitle": "Each main section now has its own page.",
     "overviewText": "This keeps the homepage light and gives every topic room to grow without turning the site into a long scroll.",
     "overviewCards": [
-      {
-        "eyebrow": "About",
-        "title": "Background, influences, and personality",
-        "text": "Use the About page for biography, personal context, and the story behind the work.",
-        "href": "/about.html",
-        "linkLabel": "Open About"
-      },
       {
         "eyebrow": "About",
         "title": "Background, influences, and personality",
@@ -85,13 +73,6 @@
         "text": "Use the Events page for community updates, shows, talks, markets, and future appearances.",
         "href": "/events.html",
         "linkLabel": "Open Events"
-      },
-      {
-        "eyebrow": "Studio",
-        "title": "Behind the scenes",
-        "text": "Get a look at the creative process, workspace, and tools used in making the work.",
-        "href": "/studio.html",
-        "linkLabel": "Open Studio"
       }
     ],
     "futureEyebrow": "Future option",

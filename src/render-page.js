@@ -582,7 +582,7 @@ export async function renderPage(currentPage) {
         'home',
         renderHomeHero(content),
         `
-          <section class="section">
+          <section class="section section-two">
             <div class="section-heading ${renderRevealClass()}">
               <p class="eyebrow">${escapeHtml(site.home.overviewEyebrow)}</p>
               <h2>${escapeHtml(site.home.overviewTitle)}</h2>
@@ -593,7 +593,7 @@ export async function renderPage(currentPage) {
             </div>
           </section>
           ${renderFeaturedBlocks(content)}
-          <section class="section">
+          <section class="section section-three">
             <div class="contact-panel ${renderRevealClass()}">
               <div>
                 <p class="eyebrow">${escapeHtml(site.home.futureEyebrow)}</p>

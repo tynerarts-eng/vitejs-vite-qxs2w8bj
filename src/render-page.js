@@ -582,7 +582,14 @@ export async function renderPage(currentPage) {
         'home',
         renderHomeHero(content),
         `
+<<<<<<< HEAD
           <section class="section">
+=======
+          <section class="section section-two">
+            <div class="section-two-media">
+                <img src="/media/Touch-of-Gold.jpg" alt="Touch of Gold" />
+            </div>
+>>>>>>> d8f83f9 (test)
             <div class="section-heading ${renderRevealClass()}">
               <p class="eyebrow">${escapeHtml(site.home.overviewEyebrow)}</p>
               <h2>${escapeHtml(site.home.overviewTitle)}</h2>

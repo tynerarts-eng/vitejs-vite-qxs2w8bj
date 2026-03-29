@@ -23,13 +23,18 @@ Set these before running the server outside local testing:
 ```bash
 ADMIN_PASSWORD=your-shared-password
 SESSION_SECRET=a-long-random-secret
+SESSION_MAX_AGE_MS=14400000
+ADMIN_LOGIN_MAX_ATTEMPTS=5
+ADMIN_LOGIN_WINDOW_MS=900000
 ADMIN_ROUTE=/studio-admin
 PORT=3000
 ```
 
 `ADMIN_PASSWORD` and `SESSION_SECRET` should not be committed.
 
-The server falls back to insecure local defaults if these are missing. On any deployed machine, set both values explicitly.
+In local development, the server falls back to insecure defaults for `ADMIN_PASSWORD` and `SESSION_SECRET`. In production, startup now fails fast if either value is still set to its default fallback.
+
+`SESSION_SECRET` should be a long random value. `SESSION_MAX_AGE_MS` defaults to 4 hours. The admin login endpoint also applies a basic per-IP rate limit using `ADMIN_LOGIN_MAX_ATTEMPTS` within `ADMIN_LOGIN_WINDOW_MS`.
 
 ## Commands
 
@@ -121,6 +126,9 @@ Example:
 ```env
 ADMIN_PASSWORD=replace-this-with-a-real-password
 SESSION_SECRET=replace-this-with-a-long-random-secret
+SESSION_MAX_AGE_MS=14400000
+ADMIN_LOGIN_MAX_ATTEMPTS=5
+ADMIN_LOGIN_WINDOW_MS=900000
 ADMIN_ROUTE=/studio-admin
 PORT=3000
 ```
@@ -225,7 +233,15 @@ At minimum, make sure the public web server forwards:
 - `/media/*`
 - the hidden admin route from `ADMIN_ROUTE`
 
-If you use HTTPS, the admin cookie remains `HttpOnly`, but the current server code does not force the cookie `Secure` flag itself. In practice, you should still put the site behind HTTPS on the public internet.
+When the app receives an HTTPS request, including the usual `X-Forwarded-Proto: https` header from a reverse proxy, the admin session cookie is now issued with `Secure`, `HttpOnly`, and `SameSite=Lax`.
+
+Production deployments should:
+
+- terminate TLS at `nginx` or another reverse proxy
+- forward `X-Forwarded-Proto` so Express can detect HTTPS correctly
+- keep `ADMIN_PASSWORD` and `SESSION_SECRET` set to non-default values
+- expect admin sessions to expire after `SESSION_MAX_AGE_MS`
+- expect repeated failed login attempts from the same IP to return `429 Too Many Requests`
 
 ### Recommended Checks
 

@@ -27,6 +27,11 @@
       "href": "/events.html"
     },
     {
+      "key": "studio",
+      "label": "Studio",
+      "href": "/studio.html"
+    },
+    {
       "key": "contact",
       "label": "Contact",
       "href": "/contact.html"
@@ -73,6 +78,13 @@
         "text": "Use the Events page for community updates, shows, talks, markets, and future appearances.",
         "href": "/events.html",
         "linkLabel": "Open Events"
+      },
+      {
+        "eyebrow": "Studio",
+        "title": "Behind the scenes",
+        "text": "Get a look at the creative process, workspace, and tools used in making the work.",
+        "href": "/studio.html",
+        "linkLabel": "Open Studio"
       }
     ],
     "futureEyebrow": "Future option",
@@ -103,11 +115,11 @@
     "title": "Make it easy to reach out.",
     "body": "Use the contact area for inquiries, local opportunities, commissions, or general conversation. If a shop is added later, this section can stay focused on direct connection.",
     "emailLabel": "bruce@tyner.ca",
-    "emailHref": "mailto:hello@example.com",
+    "emailHref": "mailto:bruce@tyner.ca",
     "note": "Future option: add a shop page or simple product list if there is interest in selling work directly."
   },
   "footer": {
-    "text": "A simple multi-page baseline for your dad's bio, art, writing, and events.",
+    "text": "Keep in touch for new work, updates and new developements.",
     "linkLabel": "Get in touch"
   }
 }

@@ -1,0 +1,88 @@
+{
+  "intro": {
+    "eyebrow": "Portfolio",
+    "title": "Selected work and featured ideas.",
+    "intro": "These cards are placeholders for real pieces, collections, or categories. They can become paintings, prints, sketches, essays, or any other body of work."
+  },
+  "collections": [
+    {
+      "id": "featured-work",
+      "title": "VanGough",
+      "description": "Me",
+      "sortOrder": 1,
+      "status": "published",
+      "items": [
+        {
+          "id": "work-title-one",
+          "collectionId": "featured-work",
+          "title": "Work Title One",
+          "originalPath": "",
+          "thumbnailPath": "",
+          "altText": "Placeholder artwork",
+          "caption": "Short description, medium, year, or a note about why this piece matters.",
+          "year": "",
+          "medium": "",
+          "dimensions": "",
+          "status": "published",
+          "sortOrder": 10
+        },
+        {
+          "id": "collection-or-theme",
+          "collectionId": "featured-work",
+          "title": "Collection or Theme",
+          "originalPath": "",
+          "thumbnailPath": "",
+          "altText": "Placeholder artwork",
+          "caption": "Use this to group related work or talk about an ongoing idea your dad keeps returning to.",
+          "year": "",
+          "medium": "",
+          "dimensions": "",
+          "status": "draft",
+          "sortOrder": 20
+        },
+        {
+          "id": "art-4a66298a",
+          "collectionId": "featured-work",
+          "title": "selfie",
+          "originalPath": "/media/originals/1773588339845-selfie.jpg",
+          "thumbnailPath": "/media/thumbnails/1773588339845-selfie.jpg",
+          "altText": "selfie",
+          "caption": "",
+          "year": "",
+          "medium": "",
+          "dimensions": "",
+          "status": "published",
+          "sortOrder": 30
+        },
+        {
+          "id": "art-0124d7ec",
+          "collectionId": "featured-work",
+          "title": "Two Trees",
+          "originalPath": "/media/originals/1773765169406-two-trees.jpg",
+          "thumbnailPath": "/media/thumbnails/1773765169406-two-trees.jpg",
+          "altText": "Two Trees",
+          "caption": "",
+          "year": "",
+          "medium": "",
+          "dimensions": "",
+          "status": "published",
+          "sortOrder": 40
+        },
+        {
+          "id": "art-86de9b77",
+          "collectionId": "featured-work",
+          "title": "Two Trees",
+          "originalPath": "/media/originals/1773765221232-two-trees.jpg",
+          "thumbnailPath": "/media/thumbnails/1773765221232-two-trees.jpg",
+          "altText": "Two Trees",
+          "caption": "",
+          "year": "",
+          "medium": "",
+          "dimensions": "",
+          "status": "published",
+          "sortOrder": 50
+        }
+      ]
+    }
+  ]
+}

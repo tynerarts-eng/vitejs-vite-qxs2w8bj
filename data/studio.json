@@ -1,0 +1,33 @@
+{
+  "intro": {
+    "eyebrow": "Studio",
+    "title": "Visit Bruce Tyner's art studio, explore the creative space, and discover the location.",
+    "body": "This can be used casually: studio thoughts, process notes, event recaps, ideas in progress, or stories from everyday life."
+  },
+  "location": {
+    "address": "60 Morrow Drive",
+    "city": "Muskoka Falls",
+    "direction": "Ontario, P1L 0A1",
+    "hours": "By appointment or chance",
+    "mapUrl": "",
+    "mapEmbedSrc": "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2821.3298885844983!2d-79.2995506!3d44.9979224!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4d2a8471c2714245%3A0xda42872b3c336864!2sTown%20of%2C%2060%20Morrow%20Dr%2C%20Bracebridge%2C%20ON%20P1L%200A1!5e0!3m2!1sen!2sca!4v1774321618102!5m2!1sen!2sca"
+  },
+  "highlights": [
+    {
+      "title": "Studio Highlights",
+      "text": "Get a look at the creative process, workspace, and tools used in making the work."
+    }
+  ],
+  "studioImages": [
+    {
+      "path": "/media/studio1.jpg",
+      "alt": "Bruce Tyner's art studio workspace with tools and materials.",
+      "caption": "Bruce Tyner's art studio, showcasing the creative workspace and tools used in the artistic process."
+    },
+    {
+      "path": "/media/studio2.jpg",
+      "alt": "Close-up of artwork in progress in Bruce Tyner's studio.",
+      "caption": "Close-up of artwork in progress in Bruce Tyner's studio."
+    }
+  ]
+}

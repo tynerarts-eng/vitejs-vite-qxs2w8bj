@@ -1,0 +1,33 @@
+{
+  "intro": {
+    "eyebrow": "Blog",
+    "title": "Notes, reflections, and updates.",
+    "intro": "This can be used casually: studio thoughts, process notes, event recaps, ideas in progress, or stories from everyday life."
+  },
+  "posts": [
+    {
+      "id": "first-post-placeholder",
+      "title": "First post placeholder",
+      "slug": "first-post-placeholder",
+      "summary": "Add a short entry here once the first real post is ready.",
+      "body": "<p>Add a short entry here once the first real post is ready.</p>",
+      "publishDate": "",
+      "createdAt": "2026-03-15T10:00:00.000Z",
+      "updatedAt": "2026-03-15T10:00:00.000Z",
+      "sortOrder": 10,
+      "published": true
+    },
+    {
+      "id": "behind-the-scenes-update",
+      "title": "Behind-the-scenes update",
+      "slug": "behind-the-scenes-update",
+      "summary": "Use this for progress notes, a new piece, or a thought worth sharing with visitors.",
+      "body": "<p>Use this for progress notes, a new piece, or a thought worth sharing with visitors.</p>",
+      "publishDate": "",
+      "createdAt": "2026-03-15T10:00:00.000Z",
+      "updatedAt": "2026-03-15T10:00:00.000Z",
+      "sortOrder": 20,
+      "published": true
+    }
+  ]
+}

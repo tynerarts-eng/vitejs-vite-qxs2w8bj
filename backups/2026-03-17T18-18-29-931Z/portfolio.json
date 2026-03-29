@@ -1,0 +1,96 @@
+{
+  "intro": {
+    "eyebrow": "Portfolio",
+    "title": "Selected work and featured ideas.",
+    "intro": "These cards are placeholders for real pieces, collections, or categories. They can become paintings, prints, sketches, essays, or any other body of work."
+  },
+  "collections": [
+    {
+      "id": "featured-work",
+      "title": "New Creations",
+      "description": "AI",
+      "sortOrder": 1,
+      "status": "published",
+      "items": [
+        {
+          "id": "work-title-one",
+          "collectionId": "featured-work",
+          "title": "Work Title One",
+          "originalPath": "",
+          "thumbnailPath": "",
+          "altText": "Placeholder artwork",
+          "caption": "Short description, medium, year, or a note about why this piece matters.",
+          "year": "",
+          "medium": "",
+          "dimensions": "",
+          "status": "published",
+          "sortOrder": 10
+        },
+        {
+          "id": "art-4a66298a",
+          "collectionId": "featured-work",
+          "title": "selfie",
+          "originalPath": "/media/originals/1773588339845-selfie.jpg",
+          "thumbnailPath": "/media/thumbnails/1773588339845-selfie.jpg",
+          "altText": "selfie",
+          "caption": "",
+          "year": "",
+          "medium": "",
+          "dimensions": "",
+          "status": "published",
+          "sortOrder": 30
+        },
+        {
+          "id": "art-7ad2d8d7",
+          "collectionId": "featured-work",
+          "title": "VanGough Me",
+          "originalPath": "/media/originals/1773765376212-artist-outside-vangogh.jpeg",
+          "thumbnailPath": "/media/thumbnails/1773765376212-artist-outside-vangogh.jpg",
+          "altText": "AI create image of me outside my studio",
+          "caption": "Just having a little fun with AI",
+          "year": "2025",
+          "medium": "Digital AI",
+          "dimensions": "12x12",
+          "status": "published",
+          "sortOrder": 60
+        },
+        {
+          "id": "art-1d83efe4",
+          "collectionId": "featured-work",
+          "title": "Chris at the lake",
+          "originalPath": "/media/originals/1773767375192-duck-ai-image-2026-03-17-17-03.jpeg",
+          "thumbnailPath": "/media/thumbnails/1773767375192-duck-ai-image-2026-03-17-17-03.jpg",
+          "altText": "Duck-ai-image-2026-03-17-17-03",
+          "caption": "AI altered image of Chris",
+          "year": "2026",
+          "medium": "AI ",
+          "dimensions": "",
+          "status": "published",
+          "sortOrder": 50
+        },
+        {
+          "id": "art-3a2b2d3e",
+          "collectionId": "featured-work",
+          "title": "ARTlogo",
+          "originalPath": "/media/originals/1773770869514-artlogo.png",
+          "thumbnailPath": "/media/thumbnails/1773770869514-artlogo.jpg",
+          "altText": "ARTlogo",
+          "caption": "",
+          "year": "",
+          "medium": "",
+          "dimensions": "",
+          "status": "published",
+          "sortOrder": 50
+        }
+      ]
+    },
+    {
+      "id": "new-collection",
+      "title": "New collection",
+      "description": "",
+      "sortOrder": 20,
+      "status": "published",
+      "items": []
+    }
+  ]
+}

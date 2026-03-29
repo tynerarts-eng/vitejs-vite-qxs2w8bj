@@ -16,6 +16,18 @@ const port = Number(process.env.PORT || 3000)
 const adminRoute = process.env.ADMIN_ROUTE || '/studio-admin'
 const adminPassword = process.env.ADMIN_PASSWORD || 'change-me-admin'
 const sessionSecret = process.env.SESSION_SECRET || 'change-me-session-secret'
+const sessionMaxAgeMs = Number.isFinite(Number(process.env.SESSION_MAX_AGE_MS))
+  ? Number(process.env.SESSION_MAX_AGE_MS)
+  : 1000 * 60 * 60 * 4
+const loginWindowMs = Number.isFinite(Number(process.env.ADMIN_LOGIN_WINDOW_MS))
+  ? Number(process.env.ADMIN_LOGIN_WINDOW_MS)
+  : 1000 * 60 * 15
+const loginMaxAttempts = Number.isFinite(Number(process.env.ADMIN_LOGIN_MAX_ATTEMPTS))
+  ? Number(process.env.ADMIN_LOGIN_MAX_ATTEMPTS)
+  : 5
+const defaultAdminPassword = 'change-me-admin'
+const defaultSessionSecret = 'change-me-session-secret'
+const loginAttempts = new Map()
 
 const dataDir = path.join(__dirname, 'data')
 const mediaDir = path.join(__dirname, 'public', 'media')
@@ -29,7 +41,10 @@ const dataFiles = {
   portfolio: path.join(dataDir, 'portfolio.json'),
   blog: path.join(dataDir, 'blog.json'),
   events: path.join(dataDir, 'events.json'),
+  studio: path.join(dataDir, 'studio.json'),
 }
+
+app.set('trust proxy', 1)
 
 async function ensureDirectories() {
   await Promise.all([
@@ -67,12 +82,45 @@ function verifySession(token) {
   const [body, signature] = token.split('.')
   if (!body || !signature) return null
   const expected = crypto.createHmac('sha256', sessionSecret).update(body).digest('base64url')
+  if (signature.length !== expected.length) return null
   if (!crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(expected))) return null
   try {
-    return JSON.parse(Buffer.from(body, 'base64url').toString('utf8'))
+    const session = JSON.parse(Buffer.from(body, 'base64url').toString('utf8'))
+    if (!session?.expiresAt || session.expiresAt <= Date.now()) return null
+    return session
   } catch {
     return null
   }
+}
+
+function getRequestProtocol(req) {
+  const forwardedProto = req.headers['x-forwarded-proto']
+  if (typeof forwardedProto === 'string' && forwardedProto.length > 0) {
+    return forwardedProto.split(',')[0].trim().toLowerCase()
+  }
+  return req.protocol
+}
+
+function shouldUseSecureCookies(req) {
+  return getRequestProtocol(req) === 'https'
+}
+
+function serializeSessionCookie(req, token, maxAgeSeconds) {
+  const parts = [
+    `admin_session=${encodeURIComponent(token)}`,
+    'Path=/',
+    'HttpOnly',
+    'SameSite=Lax',
+    `Max-Age=${maxAgeSeconds}`,
+  ]
+  if (shouldUseSecureCookies(req)) {
+    parts.push('Secure')
+  }
+  return parts.join('; ')
+}
+
+function clearSessionCookie(req, res) {
+  res.setHeader('Set-Cookie', serializeSessionCookie(req, '', 0))
 }
 
 function parseCookies(req) {
@@ -92,10 +140,52 @@ function requireAuth(req, res, next) {
   const cookies = parseCookies(req)
   const session = verifySession(cookies.admin_session)
   if (!session?.authenticated) {
+    clearSessionCookie(req, res)
     return res.status(401).json({ error: 'Authentication required.' })
   }
   req.session = session
   next()
+}
+
+function getClientIdentifier(req) {
+  return req.ip || req.socket.remoteAddress || 'unknown'
+}
+
+function getLoginAttemptState(key) {
+  const now = Date.now()
+  const existing = loginAttempts.get(key)
+  if (!existing || existing.resetAt <= now) {
+    const fresh = { count: 0, resetAt: now + loginWindowMs }
+    loginAttempts.set(key, fresh)
+    return fresh
+  }
+  return existing
+}
+
+function recordFailedLoginAttempt(req) {
+  const state = getLoginAttemptState(getClientIdentifier(req))
+  state.count += 1
+  return state
+}
+
+function clearFailedLoginAttempts(req) {
+  loginAttempts.delete(getClientIdentifier(req))
+}
+
+function getRetryAfterSeconds(state) {
+  return Math.max(1, Math.ceil((state.resetAt - Date.now()) / 1000))
+}
+
+function requireLoginCapacity(req, res, next) {
+  const state = getLoginAttemptState(getClientIdentifier(req))
+  if (state.count < loginMaxAttempts) return next()
+
+  const retryAfter = getRetryAfterSeconds(state)
+  res.setHeader('Retry-After', retryAfter)
+  return res.status(429).json({
+    error: 'Too many login attempts. Try again later.',
+    retryAfter,
+  })
 }
 
 async function readJson(file) {
@@ -104,21 +194,24 @@ async function readJson(file) {
 }
 
 async function readContent() {
-  const [site, portfolio, blog, events] = await Promise.all([
+  const [site, portfolio, blog, events, studio] = await Promise.all([
     readJson(dataFiles.site),
     readJson(dataFiles.portfolio),
     readJson(dataFiles.blog),
     readJson(dataFiles.events),
+    readJson(dataFiles.studio),
   ])
-  return { site, portfolio, blog, events }
+  return { site, portfolio, blog, events, studio }
 }
 
-async function createBackup() {
+async function createBackup(keys) {
+  if (!keys.length) return null
   const stamp = new Date().toISOString().replace(/[:.]/g, '-')
   const snapshotDir = path.join(backupsDir, stamp)
   await fs.mkdir(snapshotDir, { recursive: true })
   await Promise.all(
-    Object.entries(dataFiles).map(async ([name, file]) => {
+    keys.map(async (name) => {
+      const file = dataFiles[name]
       await fs.copyFile(file, path.join(snapshotDir, `${name}.json`))
     }),
   )
@@ -126,9 +219,18 @@ async function createBackup() {
 }
 
 async function writeContent(nextContent) {
-  await createBackup()
+  const currentContent = await readContent()
+  const changedEntries = Object.entries(nextContent).filter(([key, value]) => {
+    const currentSerialized = JSON.stringify(currentContent[key])
+    const nextSerialized = JSON.stringify(value)
+    return currentSerialized !== nextSerialized
+  })
+
+  if (changedEntries.length === 0) return
+
+  await createBackup(changedEntries.map(([key]) => key))
   await Promise.all(
-    Object.entries(nextContent).map(async ([key, value]) => {
+    changedEntries.map(async ([key, value]) => {
       const file = dataFiles[key]
       await fs.writeFile(file, `${JSON.stringify(value, null, 2)}\n`, 'utf8')
     }),
@@ -143,8 +245,123 @@ function sortByOrder(list, fallback) {
   })
 }
 
+function normalizeStudioContent(studio = {}) {
+  const intro = studio.intro || {}
+  const location = studio.location || {}
+  const highlights = Array.isArray(studio.highlights)
+    ? studio.highlights
+    : studio.highlights
+      ? [studio.highlights]
+      : []
+  const studioImages = Array.isArray(studio.studioImages)
+    ? studio.studioImages
+    : studio.studioImages
+      ? [studio.studioImages]
+      : []
+
+  return {
+    intro: {
+      eyebrow: intro.eyebrow || '',
+      title: intro.title || '',
+      body: intro.body || '',
+    },
+    location: {
+      address: location.address || '',
+      city: location.city || '',
+      direction: location.direction || '',
+      hours: location.hours || '',
+      mapUrl: location.mapUrl || location.mapurl || '',
+      mapEmbedSrc: location.mapEmbedSrc || '',
+    },
+    highlights: highlights.map((item) => ({
+      title: item?.title || '',
+      text: item?.text || '',
+    })),
+    studioImages: studioImages.map((image) => ({
+      path: image?.path || '',
+      alt: image?.alt || '',
+      caption: image?.caption || '',
+    })),
+  }
+}
+
+function sanitizeText(value, maxLength = 5000) {
+  if (typeof value !== 'string') return ''
+  return value.trim().slice(0, maxLength)
+}
+
+function sanitizeEmail(value) {
+  const email = sanitizeText(value, 320)
+  if (!email) return ''
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) ? email : ''
+}
+
+const portfolioItemStatuses = new Set(['draft', 'published', 'archived'])
+const portfolioItemAvailability = new Set(['available', 'on hold', 'sold', 'not for sale'])
+
+function sanitizeAllowedValue(value, allowedValues, fallback = '') {
+  const normalized = sanitizeText(value, 120).toLowerCase()
+  if (!normalized) return fallback
+  return allowedValues.has(normalized) ? normalized : fallback
+}
+
+function normalizePortfolioItem(item = {}, defaults = {}) {
+  const fallbackSortOrder = defaults.sortOrder ?? 0
+
+  return {
+    id: sanitizeText(item.id, 120) || defaults.id || createId('art'),
+    collectionId: sanitizeText(item.collectionId, 120) || defaults.collectionId || '',
+    title: sanitizeText(item.title, 200) || defaults.title || 'Untitled piece',
+    originalPath: sanitizeText(item.originalPath, 1000) || defaults.originalPath || '',
+    thumbnailPath: sanitizeText(item.thumbnailPath, 1000) || defaults.thumbnailPath || '',
+    altText: sanitizeText(item.altText, 500) || defaults.altText || '',
+    caption: sanitizeText(item.caption, 2000) || defaults.caption || '',
+    story: sanitizeText(item.story, 8000) || defaults.story || '',
+    price: sanitizeText(item.price, 120) || defaults.price || '',
+    availability: sanitizeAllowedValue(item.availability, portfolioItemAvailability, defaults.availability || ''),
+    inquiryEmail: sanitizeEmail(item.inquiryEmail) || defaults.inquiryEmail || '',
+    year: sanitizeText(item.year, 50) || defaults.year || '',
+    medium: sanitizeText(item.medium, 200) || defaults.medium || '',
+    dimensions: sanitizeText(item.dimensions, 200) || defaults.dimensions || '',
+    status: sanitizeAllowedValue(item.status, portfolioItemStatuses, defaults.status || 'published'),
+    sortOrder: Number.isFinite(Number(item.sortOrder))
+      ? Number(item.sortOrder)
+      : Number.isFinite(Number(defaults.sortOrder))
+        ? Number(defaults.sortOrder)
+        : fallbackSortOrder,
+  }
+}
+
+function normalizePortfolioContent(portfolio = {}) {
+  const intro = portfolio.intro || {}
+  const collections = Array.isArray(portfolio.collections) ? portfolio.collections : []
+
+  return {
+    ...portfolio,
+    intro: {
+      eyebrow: intro.eyebrow || '',
+      title: intro.title || '',
+      intro: intro.intro || '',
+    },
+    collections: collections.map((collection) => ({
+      ...collection,
+      items: Array.isArray(collection.items)
+        ? collection.items.map((item, index) =>
+            normalizePortfolioItem(item, {
+              id: item?.id,
+              collectionId: collection.id,
+              title: item?.title || 'Untitled piece',
+              sortOrder: (index + 1) * 10,
+            }),
+          )
+        : [],
+    })),
+  }
+}
+
 function buildPublicPayload(content) {
-  const portfolioCollections = sortByOrder(content.portfolio.collections, (a, b) => a.title.localeCompare(b.title)).map(
+  const normalizedPortfolio = normalizePortfolioContent(content.portfolio)
+  const portfolioCollections = sortByOrder(normalizedPortfolio.collections, (a, b) => a.title.localeCompare(b.title)).map(
     (collection) => ({
       ...collection,
       items: sortByOrder(collection.items || [], (a, b) => a.title.localeCompare(b.title)).filter(
@@ -167,13 +384,14 @@ function buildPublicPayload(content) {
 
   return {
     ...content,
-    portfolio: { ...content.portfolio, collections: portfolioCollections },
+    portfolio: { ...normalizedPortfolio, collections: portfolioCollections },
     blog: { ...content.blog, posts: publishedPosts },
     events: {
       ...content.events,
       upcoming: normalizedEvents.filter((event) => event.status !== 'past'),
       past: normalizedEvents.filter((event) => event.status === 'past'),
     },
+    studio: normalizeStudioContent(content.studio),
   }
 }
 
@@ -184,28 +402,35 @@ function replaceById(list, nextItem) {
 app.use(express.json({ limit: '5mb' }))
 app.use('/media', express.static(mediaDir))
 
-app.post('/api/admin/login', async (req, res) => {
+app.post('/api/admin/login', requireLoginCapacity, async (req, res) => {
   const { password } = req.body ?? {}
   if (password !== adminPassword) {
+    recordFailedLoginAttempt(req)
     return res.status(401).json({ error: 'Incorrect password.' })
   }
 
-  const token = signSession({ authenticated: true, createdAt: Date.now() })
-  res.setHeader(
-    'Set-Cookie',
-    `admin_session=${encodeURIComponent(token)}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${60 * 60 * 8}`,
-  )
+  clearFailedLoginAttempts(req)
+  const createdAt = Date.now()
+  const token = signSession({
+    authenticated: true,
+    createdAt,
+    expiresAt: createdAt + sessionMaxAgeMs,
+  })
+  res.setHeader('Set-Cookie', serializeSessionCookie(req, token, Math.floor(sessionMaxAgeMs / 1000)))
   res.json({ ok: true })
 })
 
-app.post('/api/admin/logout', (_req, res) => {
-  res.setHeader('Set-Cookie', 'admin_session=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0')
+app.post('/api/admin/logout', (req, res) => {
+  clearSessionCookie(req, res)
   res.json({ ok: true })
 })
 
 app.get('/api/admin/session', (req, res) => {
   const cookies = parseCookies(req)
   const session = verifySession(cookies.admin_session)
+  if (!session) {
+    clearSessionCookie(req, res)
+  }
   res.json({ authenticated: Boolean(session?.authenticated) })
 })
 
@@ -220,7 +445,11 @@ app.get('/api/public/content', async (_req, res, next) => {
 
 app.get('/api/admin/content', requireAuth, async (_req, res, next) => {
   try {
-    res.json(await readContent())
+    const content = await readContent()
+    res.json({
+      ...content,
+      studio: normalizeStudioContent(content.studio),
+    })
   } catch (error) {
     next(error)
   }
@@ -232,6 +461,18 @@ app.put('/api/admin/site', requireAuth, async (req, res, next) => {
     const nextContent = { ...current, site: req.body }
     await writeContent(nextContent)
     res.json(nextContent.site)
+  } catch (error) {
+    next(error)
+  }
+})
+
+app.put('/api/admin/studio', requireAuth, async (req, res, next) => {
+  try {
+    const current = await readContent()
+    const studio = normalizeStudioContent(req.body)
+    const nextContent = { ...current, studio }
+    await writeContent(nextContent)
+    res.json(studio)
   } catch (error) {
     next(error)
   }
@@ -383,20 +624,12 @@ app.post('/api/admin/portfolio/items', requireAuth, async (req, res, next) => {
     const collection = current.portfolio.collections.find((entry) => entry.id === req.body.collectionId)
     if (!collection) return res.status(404).json({ error: 'Collection not found.' })
 
-    const item = {
+    const item = normalizePortfolioItem(req.body, {
       id: req.body.id || createId('art'),
       collectionId: collection.id,
       title: req.body.title || 'Untitled piece',
-      originalPath: req.body.originalPath || '',
-      thumbnailPath: req.body.thumbnailPath || '',
-      altText: req.body.altText || '',
-      caption: req.body.caption || '',
-      year: req.body.year || '',
-      medium: req.body.medium || '',
-      dimensions: req.body.dimensions || '',
-      status: req.body.status || 'published',
-      sortOrder: Number(req.body.sortOrder || collection.items.length * 10 + 10),
-    }
+      sortOrder: collection.items.length * 10 + 10,
+    })
     collection.items.push(item)
     await writeContent(current)
     res.status(201).json(item)
@@ -412,7 +645,7 @@ app.put('/api/admin/portfolio/items/:id', requireAuth, async (req, res, next) =>
     current.portfolio.collections = current.portfolio.collections.map((collection) => {
       const found = collection.items.find((item) => item.id === req.params.id)
       if (!found) return collection
-      updated = { ...found, ...req.body }
+      updated = normalizePortfolioItem({ ...found, ...req.body }, { ...found, collectionId: collection.id, id: found.id })
       return { ...collection, items: replaceById(collection.items, updated) }
     })
 
@@ -467,14 +700,14 @@ app.post('/api/admin/portfolio/upload', requireAuth, upload.array('images', 20),
         originalPath: `/media/originals/${path.basename(originalFile)}`,
         thumbnailPath: `/media/thumbnails/${path.basename(thumbFile)}`,
         altText: path.basename(file.originalname, extension),
-        caption: '',
-        year: '',
-        medium: '',
-        dimensions: '',
-        status: 'published',
         sortOrder: collection.items.length * 10 + createdItems.length * 10 + 10,
       }
-      createdItems.push(item)
+      createdItems.push(
+        normalizePortfolioItem(item, {
+          ...item,
+          status: 'published',
+        }),
+      )
     }
 
     collection.items.push(...createdItems)
@@ -488,8 +721,16 @@ app.post('/api/admin/portfolio/upload', requireAuth, upload.array('images', 20),
 app.post('/api/admin/reorder', requireAuth, async (req, res, next) => {
   try {
     const current = await readContent()
-    const { type, ids } = req.body ?? {}
+    const { type, ids, collectionId } = req.body ?? {}
+    if (!Array.isArray(ids)) {
+      return res.status(400).json({ error: 'ids must be an array.' })
+    }
     const orderMap = new Map((ids || []).map((id, index) => [id, (index + 1) * 10]))
+    const allowedTypes = new Set(['blog', 'events', 'collections', 'items'])
+
+    if (!allowedTypes.has(type)) {
+      return res.status(400).json({ error: 'Invalid reorder type.' })
+    }
 
     if (type === 'blog') {
       current.blog.posts = current.blog.posts.map((post) => ({ ...post, sortOrder: orderMap.get(post.id) ?? post.sortOrder }))
@@ -512,7 +753,10 @@ app.post('/api/admin/reorder', requireAuth, async (req, res, next) => {
     if (type === 'items') {
       current.portfolio.collections = current.portfolio.collections.map((collection) => ({
         ...collection,
-        items: collection.items.map((item) => ({ ...item, sortOrder: orderMap.get(item.id) ?? item.sortOrder })),
+        items:
+          collectionId && collection.id !== collectionId
+            ? collection.items
+            : collection.items.map((item) => ({ ...item, sortOrder: orderMap.get(item.id) ?? item.sortOrder })),
       }))
     }
 
@@ -529,8 +773,17 @@ app.use((error, _req, res, _next) => {
 })
 
 async function start() {
+  if (isProduction) {
+    if (adminPassword === defaultAdminPassword) {
+      throw new Error('ADMIN_PASSWORD must be set to a non-default value in production.')
+    }
+    if (sessionSecret === defaultSessionSecret) {
+      throw new Error('SESSION_SECRET must be set to a non-default value in production.')
+    }
+  }
+
   await ensureDirectories()
-  const publicPageRoutes = ['/', '/about.html', '/portfolio.html', '/blog.html', '/events.html', '/contact.html']
+  const publicPageRoutes = ['/', '/about.html', '/portfolio.html', '/blog.html', '/events.html', '/contact.html', '/studio.html']
 
   if (isProduction) {
     app.use(express.static(path.join(__dirname, 'dist')))

@@ -11,6 +11,7 @@ export default defineConfig({
         portfolio: resolve(__dirname, 'portfolio.html'),
         blog: resolve(__dirname, 'blog.html'),
         events: resolve(__dirname, 'events.html'),
+        studio: resolve(__dirname, 'studio.html'),
         contact: resolve(__dirname, 'contact.html'),
       },
     },

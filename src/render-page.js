@@ -436,6 +436,9 @@ function renderFeaturedBlocks(content) {
 
   return `
     <section class="section">
+      <div class="section-featured-media">
+        <img src="/media/Touch-of-Gold.jpg" alt="Touch of Gold" />
+      </div>
       <div class="section-heading ${renderRevealClass()}">
         <p class="eyebrow">Fresh from the studio</p>
         <h2>Recent highlights from the managed content.</h2>

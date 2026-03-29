@@ -352,6 +352,8 @@ a.button {
   background: #273128;
 }
 
+.section-two-media,
+.section-featured-media,
 .hero-stage-media,
 .hero-slide,
 .hero-stage-overlay {
@@ -369,13 +371,35 @@ a.button {
   opacity: 1;
 }
 
+
 .hero-slide img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  
   filter: saturate(0.88) contrast(1.01) brightness(0.68);
 }
 
+
+.section-two-media img {
+object-fit: fill;
+object-position: center;
+  width: 100%;
+  height: 100%;
+  
+  filter: saturate(0.88) contrast(1.01) brightness(0.68);
+}
+
+.section-featured-media img {
+object-fit: fill;
+object-position: center;
+  width: 100%;
+  height: 100%;
+  
+  filter: saturate(0.88) contrast(1.01) brightness(0.68);
+}
+.hero-slide img {
+object-fit: cover;
+}
 .hero-stage-overlay {
   z-index: 1;
   background:

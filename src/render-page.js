@@ -599,7 +599,10 @@ export async function renderPage(currentPage) {
             </div>
           </section>
           ${renderFeaturedBlocks(content)}
-          <section class="section">
+
+          <section class="section section-future">
+            <div class="section-future-media">
+                <img src="/media/Untitled Encaustic Shellac Burn web.jpg" alt="Untitled Encaustic Shellac Burn" />
             <div class="contact-panel ${renderRevealClass()}">
               <div>
                 <p class="eyebrow">${escapeHtml(site.home.futureEyebrow)}</p>
